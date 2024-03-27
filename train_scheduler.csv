@@ -1,0 +1,2 @@
+id_model,batch_size,memory_batch_size,num_epochs,img_transform,base_model,pooling,encoder_layers,projection_layers,use_dropout,dropout_rate,loss_dist,loss_margin,loss_swap,lr,lr_embedder,lr_scheduler_step,lr_scheduler_gamma,weight_decay,backward_freq,status
+1,40,8,30,augmentation,resnet18,mean,[512],[256],True,0.2,euclidean,0.1,True,0.0001,no_train,10,0.1,0.001,batch,pending
