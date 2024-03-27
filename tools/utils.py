@@ -70,7 +70,7 @@ class Utils:
 
 
     @staticmethod
-    def download_images(dest_path, url = "https://surfdrive.surf.nl/files/index.php/s/jo33wEPCfbOxvea"):
+    def download_images(dest_path, url = "https://surfdrive.surf.nl/files/index.php/s/jo33wEPCfbOxvea/download"):
         print("Downloading images...")
         Utils.__download_image_zip(url, dest_path + '.zip')
         print("Download complete!")
