@@ -63,11 +63,12 @@ class PlaceEmbeddingTrainer(object):
         if batch_size % memory_batch_size != 0:
             raise ValueError('Memory batch size must be a divisor of batch size')
 
-        transform = get_transform(img_transform)
-        dataset = TripletDataset(data = triplets_path, transform = transform)
-        trs, vls = int(data_splits['train'] * len(dataset)), int(data_splits['val'] * len(dataset))
-        trainset, valset, _ = random_split(dataset, [trs, vls, len(dataset) - trs - vls], generator = torch.Generator().manual_seed(data_seed))
-        
+        train_transform = get_transform(img_transform)
+        val_transform = get_transform('default')
+
+        trainset = TripletDataset(data_splits['train'], data = triplets_path, transform = train_transform, train = True, seed = data_seed)
+        valset = TripletDataset(data_splits['val'], data = triplets_path, transform = val_transform, train = False, seed = data_seed)
+                
         self.batch_size = batch_size
         self.memory_batch_size = memory_batch_size
 
@@ -83,10 +84,10 @@ class PlaceEmbeddingTrainer(object):
         self.trainer_dict.update({'img_transform': str(img_transform),
                                   'train_split': len(self.train_loader.dataset),
                                   'val_split': len(self.val_loader.dataset),
-                                  'test_split': len(dataset) - len(self.train_loader.dataset) - len(self.val_loader.dataset),
+                                  'test_split': trainset.full_len - len(self.train_loader.dataset) - len(self.val_loader.dataset),
                                   'data_seed': data_seed})
 
-        self.logger.log_data(len(dataset), len(trainset), len(valset), batch_size, memory_batch_size)
+        self.logger.log_data(trainset.full_len, len(trainset), len(valset), batch_size, memory_batch_size)
     
 
     def set_model(self, base_model, base_pretrained, pooling,     

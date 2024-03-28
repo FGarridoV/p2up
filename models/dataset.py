@@ -10,13 +10,24 @@ from tools.utils import Utils
 
 
 class TripletDataset(Dataset):
-    def __init__(self, data = 'triplets.csv', transform=None, train=True):
+    def __init__(self, split, data = 'triplets.csv', transform=None, train=True, seed=21):
         """
         TripletDataset class to load the triplets dataset
         """
         if not os.path.exists(data):
             Utils.generate_triplets(csv_path=data)
         self.data = pd.read_csv(data)
+        self.full_len = len(self.data)
+
+        n = int(len(self.data) * split)
+        if train:
+            self.data = self.data.sample(frac=1, random_state=seed).reset_index(drop=True)
+            self.data = self.data.iloc[:n]
+
+        elif not train:
+            self.data = self.data.sample(frac=1, random_state=seed).reset_index(drop=True)
+            self.data = self.data.iloc[-n:]
+
         self.__image_downloader()
         self.transform = transform
         self.train = train
