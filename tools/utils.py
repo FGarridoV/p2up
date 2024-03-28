@@ -7,12 +7,12 @@ import sqlite3 as sql
 class Utils:
 
     @staticmethod
-    def generate_triplets(db_path = 'data/database.db', csv_path = 'data/triplets.csv'):
+    def generate_triplets(db_path = 'data/database.db', csv_path = 'data/triplets.csv', t_tol = 12):
 
         conn = sql.connect(db_path)
 
         # Create a union query to get all the triplets
-        sub_querys = [Utils.__query_question_q(q) for q in range(1, 16)]
+        sub_querys = [Utils.__query_question_q(q, t_tol) for q in range(1, 16)]
         union_query = " UNION ALL".join(sub_querys)
         query = f"""SELECT 
                         * 
@@ -48,7 +48,15 @@ class Utils:
 
 
     @staticmethod
-    def __query_question_q(q):
+    def __query_question_q(q, t_tol):
+
+        if q == 1:
+            col_ti = 'start_survey'
+            col_tf = 'next_button_1'
+        else:
+            col_ti = f'next_button_{q-1}'
+            col_tf = f'next_button_{q}'
+
         return f"""
                 SELECT
                     r.respondent_id, 
@@ -62,10 +70,14 @@ class Utils:
                 FROM 
                     Response as r, 
                     Task_Set as s,
-                    Task as t                  
+                    Task as t,
+                    Timestamp as ts
+
                 WHERE 
                     s.set_id = r.set_id AND
-                    s.task_{q} = t.task_id
+                    s.task_{q} = t.task_id AND
+                    r.respondent_id = ts.respondent_id AND
+                    ts.{col_tf} - ts.{col_ti} >= {t_tol}
                 """
 
 
