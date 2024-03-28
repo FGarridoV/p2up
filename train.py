@@ -51,7 +51,7 @@ if __name__ == '__main__':
             base_model = row['base_model']
             pooling = row['pooling']
             encoder_layers = ast.literal_eval(row['encoder_layers'])
-            projection_layers = ast.literal_eval(row['encoder_layers'])
+            projection_layers = ast.literal_eval(row['projection_layers'])
             use_dropout = row['use_dropout']
             dropout_rate = float(row['dropout_rate'])
             loss_dist = row['loss_dist']
