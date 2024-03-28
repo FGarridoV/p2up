@@ -68,10 +68,6 @@ if __name__ == '__main__':
             weight_decay = float(row['weight_decay'])
             backward_freq = row['backward_freq']
 
-            print(f'Running experiment {i+1} with the following hyperparameters:')
-            print(batch_size, memory_batch_size, num_epochs, img_transform, base_model, pooling, encoder_layers, projection_layers, use_dropout, dropout_rate, loss_dist, loss_margin, loss_swap, lr, lr_embedder, lr_scheduler_step, lr_scheduler_gamma, weight_decay, backward_freq)
-            print(type(batch_size), type(memory_batch_size), type(num_epochs), type(img_transform), type(base_model), type(pooling), type(encoder_layers), type(projection_layers), type(use_dropout), type(dropout_rate), type(loss_dist), type(loss_margin), type(loss_swap), type(lr), type(lr_embedder), type(lr_scheduler_step), type(lr_scheduler_gamma), type(weight_decay), type(backward_freq))
-            
             trainer = PlaceEmbeddingTrainer(name = None,
                                             use_gpu = gpu,
                                             use_tensorboard = use_tensorboard, 
