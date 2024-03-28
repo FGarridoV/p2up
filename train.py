@@ -44,10 +44,6 @@ if __name__ == '__main__':
     for i, row in df.iterrows():
         if row['status'] == 'pending':
 
-            # Set status to training
-            df.loc[i, 'status'] = 'training'
-            df.to_csv('train_scheduler.csv', index = False, sep = ';')
-
             batch_size = int(row['batch_size'])
             memory_batch_size = int(row['memory_batch_size']) if row['memory_batch_size'] != 'None' else None
             num_epochs = int(row['num_epochs'])

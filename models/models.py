@@ -63,11 +63,11 @@ class PlaceEmbedding(nn.Module):
                 elif m == 'std':
                     xs.append(x.std(dim=1))
                 elif m == 'max':
-                    xs.append(x.max(dim=1))
+                    xs.append(x.max(dim=1).values)
                 elif m == 'min':
-                    xs.append(x.min(dim=1))
+                    xs.append(x.min(dim=1).values)
                 elif m == 'median':
-                    xs.append(x.median(dim=1))
+                    xs.append(x.median(dim=1).values)
             x = torch.cat(xs, dim=1)
         
         # Encoder
