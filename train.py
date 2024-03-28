@@ -39,14 +39,14 @@ if __name__ == '__main__':
     gpu = True                  # Try to use GPU
     use_tensorboard = True      # Use tensorboard for logging 
 
-    df = pd.read_csv('train_scheduler.csv')
+    df = pd.read_csv('train_scheduler.csv', sep = ';')
 
     for i, row in df.iterrows():
         if row['status'] == 'pending':
 
             # Set status to training
             df.loc[i, 'status'] = 'training'
-            df.to_csv('train_scheduler.csv', index = False)
+            df.to_csv('train_scheduler.csv', index = False, sep = ';')
 
             batch_size = int(row['batch_size'])
             memory_batch_size = int(row['memory_batch_size']) if row['memory_batch_size'] != 'None' else None
@@ -103,4 +103,4 @@ if __name__ == '__main__':
 
             # Change status to done
             df.loc[i, 'status'] = 'done'
-            df.to_csv('train_scheduler.csv', index = False)
+            df.to_csv('train_scheduler.csv', index = False, sep = ';')
