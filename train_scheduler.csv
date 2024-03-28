@@ -1,2 +1,7 @@
-id_model,batch_size,memory_batch_size,num_epochs,img_transform,base_model,pooling,encoder_layers,projection_layers,use_dropout,dropout_rate,loss_dist,loss_margin,loss_swap,lr,lr_embedder,lr_scheduler_step,lr_scheduler_gamma,weight_decay,backward_freq,status
-1,40,8,30,augmentation,resnet18,mean,[512],[256],True,0.2,euclidean,0.1,True,0.0001,no_train,10,0.1,0.001,batch,pending
+id_model;batch_size;memory_batch_size;num_epochs;img_transform;base_model;pooling;encoder_layers;projection_layers;use_dropout;dropout_rate;loss_dist;loss_margin;loss_swap;lr;lr_embedder;lr_scheduler_step;lr_scheduler_gamma;weight_decay;backward_freq;status
+1;128;64;30;augmentation;resnet18;max;[512,512];[256,128];True;0.25;euclidean;0.1;True;0.001;no_train;7;0.1;0.001;batch;pending
+1;128;64;30;augmentation;resnet18;mean;[512,512];[256,128];True;0.25;euclidean;0.1;True;0.001;no_train;7;0.1;0.001;batch;pending
+1;128;32;30;augmentation;resnet18;mean-max;[512,512];[256,128];True;0.25;euclidean;0.1;True;0.0001;0.0001;7;0.1;0.001;batch;pending
+1;128;32;30;augmentation;resnet18;mean-max;[512,512];[256,128];True;0.25;euclidean;0.2;True;0.001;no_train;10;0.1;0.001;batch;pending
+2;128;64;30;augmentation;resnet18;mean-max;[512,512];[256,128];True;0.25;euclidean;0.1;True;0.001;no_train;10;0.1;0.001;batch;pending
+3;256;32;30;augmentation;resnet18;mean-max;[512,512];[256,128];True;0.25;euclidean;0.2;True;0.001;no_train;10;0.1;0.001;batch;pending
