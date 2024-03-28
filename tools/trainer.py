@@ -184,11 +184,12 @@ class PlaceEmbeddingTrainer(object):
         self.logger.log_training(num_epochs, self.n_batches)
 
         self.unix_0 = time.time()
-        for epoch in range(1, num_epochs + 1):
 
+        for epoch in range(1, num_epochs + 1):
+            t0 = time.time()
             train_loss, train_accuracy = self._train_one_epoch(epoch)
             val_loss, val_accuracy = self._eval_one_epoch(epoch)
-            epoch_time = time.time() - self.unix_0
+            epoch_time = time.time() - t0
             self.reporter.add_epoch_indicator(self.name, epoch, train_loss, train_accuracy, val_loss, val_accuracy, epoch_time)
 
             if self.criterion == 'loss':
@@ -210,9 +211,9 @@ class PlaceEmbeddingTrainer(object):
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()
             
-            self.epoch_times.append(time.time() - self.unix_0)
-            total_time = sum(self.epoch_times)
-            self.logger.log_epoch_times(epoch, self.epoch_times[-1], total_time)
+            self.epoch_times.append(epoch_time)
+            total_time = time.time() - self.unix_0
+            self.logger.log_epoch_times(epoch, epoch_time, total_time)
 
         if self.use_tensorboard:
             self.writer.close()
@@ -324,9 +325,9 @@ class PlaceEmbeddingTrainer(object):
         self.best['val_loss'] = val_loss
         self.best['val_acc'] = val_acc
         self.best['elapsed_time'] = elapsed_time
-        self.best['model_path'] = f'{self.trainer_dir}/{self.name}.pth'
+        self.best['model_path'] = f'{self.trainer_dir}/{self.name}_e{epoch}.pth'
         self.save_model(self.best['model_path'])
-        self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec.pth')
+        self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec_e{epoch}.pth')
         self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time:.3f} seconds')
 
 
