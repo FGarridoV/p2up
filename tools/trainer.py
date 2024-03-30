@@ -349,7 +349,7 @@ class PlaceEmbeddingTrainer(object):
                 print(f"Processing batch {b}")
                 h3_code, place = data[0], data[1].to(self.device)
                 e, pe = self.model(place)
-                responses.append((h3_code, e, pe))
+                responses.append((h3_code, e.to('cpu').numpy(), pe.to('cpu').numpy()))
                 b += 1
         return responses 
 
