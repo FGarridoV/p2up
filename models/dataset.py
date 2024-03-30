@@ -82,17 +82,29 @@ class TripletDataset(Dataset):
 
     
 class PlaceDataset(Dataset):
-    def __init__(self, data = 'triplets.csv', transform=None, train=True):
+    def __init__(self, data = 'places/Delft_NL_images.csv', pkl = 'places/Delft_NL.pkl', root = '/tudelft.net/staff-umbrella/phdfrancisco/collection/application/summarized', transform=None):
         """
-        TripletDataset class to load the triplets dataset
+        PlaceDataset class to load the places dataset
         """
         if not os.path.exists(data):
-            Utils.generate_triplets(csv_path=data)
+            Utils.generate_places_csv(pkl_file = pkl, csv_file = data)
         self.data = pd.read_csv(data)
-        self.__image_downloader()
+        self.root = root
         self.transform = transform
-        self.train = train
+    
 
+    def __len__(self):
+        return len(self.data)
+    
+
+    def __getitem__(self, idx):
+        row = self.data.iloc[idx]
+        images_place = [Image.open(row[f'img_{img}']) for img in range(1, 6)]
+        if self.transform:
+            images_place = [self.transform(image) for image in images_place]
+            images_place = torch.stack(images_place)
+
+        return row['h3'], images_place
 
 class PairDataset(Dataset):
     # TODO: Implement the PairDataset class for openning pairs of places (5 images each)

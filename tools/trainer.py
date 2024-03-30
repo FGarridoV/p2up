@@ -5,6 +5,7 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader, random_split
 from models.dataset import TripletDataset
+from models.dataset import PlaceDataset
 from models.models import PlaceEmbedding
 from tools.transforms import get_transform
 from tools.logger import Logger
@@ -329,6 +330,29 @@ class PlaceEmbeddingTrainer(object):
         self.save_model(self.best['model_path'])
         self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec_e{epoch}.pth')
         self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time:.3f} seconds')
+
+    def set_place_data(self, data, pkl, batch_size, num_workers = 0):
+        eval_transform = get_transform('default')
+        evalset = PlaceDataset(data = data, pkl = pkl, transform = eval_transform)
+        self.eval_dataloader = DataLoader(evalset, batch_size = batch_size, shuffle=False, num_workers=num_workers) 
+
+    
+    def eval_model(self, model_path):
+        self.model.load_state_dict(torch.load(model_path))
+        self.model = self.model.to(self.device)
+        self.logger.log(f'Model loaded from {model_path}')
+        self.model.eval()
+        responses = {'h3': [], 'emb': [], 'pr_emb': []}
+        with torch.no_grad():
+            b = 0
+            for _, data in enumerate(self.eval_dataloader):
+                print(f"Processing batch {b}")
+                h3_code, place = data[0], data[1].to(self.device)
+                e, pe = self.model(place)
+                responses['h3'].extend(h3_code)
+                responses['emb'].extend(e)
+                responses['pr_emb'].extend(pe)
+                b += 1
 
 
     def save_model(self, path = None):
