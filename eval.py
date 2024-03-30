@@ -79,7 +79,12 @@ if __name__ == '__main__':
                             use_dropout = use_dropout, dropout_rate = dropout_rate)
 
             # Train the model
-            trainer.eval_model('20240329_143834_e13.pth')
+            responses = trainer.eval_model('20240329_143834_e13.pth')
+
+            #store the dict responses in pickle file
+            import pickle
+            with open('responses.pkl', 'wb') as f:
+                pickle.dump(responses, f)
 
             # Change status to done
             df.loc[i, 'status'] = 'done'
