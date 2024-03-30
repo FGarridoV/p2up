@@ -99,7 +99,7 @@ class PlaceDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.data.iloc[idx]
-        images_place = [Image.open(row[f'img_{img}']) for img in range(1, 6)]
+        images_place = [Image.open(f"{self.root}/{row[f'img_{img}']}") for img in range(1, 6)]
         if self.transform:
             images_place = [self.transform(image) for image in images_place]
             images_place = torch.stack(images_place)
