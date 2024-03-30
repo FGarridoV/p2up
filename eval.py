@@ -79,7 +79,7 @@ if __name__ == '__main__':
                             use_dropout = use_dropout, dropout_rate = dropout_rate)
 
             # Train the model
-            modelpth = '20240329_023607_e3'
+            modelpth = '20240328_220659_e4'
             responses = trainer.eval_model(f'{modelpth}.pth')
 
             #store the dict responses in pickle file
