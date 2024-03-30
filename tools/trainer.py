@@ -342,17 +342,16 @@ class PlaceEmbeddingTrainer(object):
         self.model = self.model.to(self.device)
         self.logger.log(f'Model loaded from {model_path}')
         self.model.eval()
-        responses = {'h3': [], 'emb': [], 'pr_emb': []}
+        responses = []
         with torch.no_grad():
             b = 0
             for _, data in enumerate(self.eval_dataloader):
                 print(f"Processing batch {b}")
                 h3_code, place = data[0], data[1].to(self.device)
                 e, pe = self.model(place)
-                responses['h3'].extend(h3_code)
-                responses['emb'].extend(e)
-                responses['pr_emb'].extend(pe)
+                responses.append((h3_code, e, pe))
                 b += 1
+        return responses 
 
 
     def save_model(self, path = None):
