@@ -82,7 +82,7 @@ class TripletDataset(Dataset):
 
     
 class PlaceDataset(Dataset):
-    def __init__(self, data = 'Rotterdam_h3_10/spatial_units.pkl', root = '/tudelft.net/staff-umbrella/phdfrancisco/embedding_places/municipalities', transform=None):
+    def __init__(self, data = 'municipalities/Rotterdam_h3_10/spatial_units.pkl', root = '/tudelft.net/staff-umbrella/phdfrancisco/embedding_places', transform=None):
         """
         PlaceDataset class to load the places dataset
         """
