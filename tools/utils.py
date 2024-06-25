@@ -111,16 +111,9 @@ class Utils:
     ### FOR PLACES
             
     @staticmethod
-    def generate_places_csv(pkl_file = 'places/Delft_NL.pkl', csv_file = 'places/Delft_NL_images.csv'):
+    def generate_places_df(pkl_file):
         df = pd.read_pickle(pkl_file)
-        df = df.reset_index(drop=True)
-        df = df[['h3', 'image_path']].copy()
-        im1 = df.groupby('h3').nth(0).set_index('h3').reset_index().rename(columns={'image_path': 'img_1'})
-        im2 = df.groupby('h3').nth(1).set_index('h3').reset_index().rename(columns={'image_path': 'img_2'})
-        im3 = df.groupby('h3').nth(2).set_index('h3').reset_index().rename(columns={'image_path': 'img_3'})
-        im4 = df.groupby('h3').nth(3).set_index('h3').reset_index().rename(columns={'image_path': 'img_4'})
-        im5 = df.groupby('h3').nth(4).set_index('h3').reset_index().rename(columns={'image_path': 'img_5'})
-        imgs = pd.concat([im1, im2, im3, im4, im5], axis=1, ignore_index = False)
-        imgs['h3_id'] = imgs['h3'].iloc[:, 0]
-        imgs = imgs[['h3_id', 'img_1', 'img_2', 'img_3', 'img_4', 'img_5']].rename(columns={'h3_id': 'h3'})
-        imgs.to_csv(csv_file, index=False)
+        df['img_num'] = df.groupby('h3').cumcount() + 1
+        df_places = df.pivot_table(index='h3', columns='img_num', values='image_path', aggfunc='first').reset_index()
+        df_places.columns = ['h3'] + [f'img_{i}' for i in range(1, len(df_places.columns))]
+        return df_places

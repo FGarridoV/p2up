@@ -82,13 +82,11 @@ class TripletDataset(Dataset):
 
     
 class PlaceDataset(Dataset):
-    def __init__(self, data = 'places/Delft_NL_images.csv', pkl = 'places/Delft_NL.pkl', root = '/tudelft.net/staff-umbrella/phdfrancisco/collection/application/summarized', transform=None):
+    def __init__(self, data = 'Rotterdam_h3_10/spatial_units.pkl', root = '/tudelft.net/staff-umbrella/phdfrancisco/embedding_places/municipalities', transform=None):
         """
         PlaceDataset class to load the places dataset
         """
-        if not os.path.exists(data):
-            Utils.generate_places_csv(pkl_file = pkl, csv_file = data)
-        self.data = pd.read_csv(data)
+        self.data = Utils.generate_places_df(data)
         self.root = root
         self.transform = transform
     

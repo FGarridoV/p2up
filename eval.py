@@ -70,15 +70,14 @@ if __name__ == '__main__':
                                             verbose = verbose)
 
             # Set the data
-            trainer.set_place_data(data = 'places/Delft_NL_images.csv', pkl = 'places/Delft_NL.pkl',
-                                   batch_size = 64)
+            trainer.set_place_data(data = 'Rotterdam_h3_10/spatial_units.pkl', batch_size = 64)
 
             # Define the model
             trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, pooling = pooling, 
                             encoder_layers = encoder_layers, projection_layers = projection_layers,
                             use_dropout = use_dropout, dropout_rate = dropout_rate)
 
-            # Train the model
+            # eval on the city
             modelpth = '20240328_220659_e4'
             responses = trainer.eval_model(f'{modelpth}.pth')
 
