@@ -86,7 +86,7 @@ class PlaceDataset(Dataset):
         """
         PlaceDataset class to load the places dataset
         """
-        self.data = Utils.generate_places_df(data)
+        self.data = Utils.generate_places_df(f'{root}/{data}')
         self.root = root
         self.transform = transform
     

@@ -331,9 +331,10 @@ class PlaceEmbeddingTrainer(object):
         self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec_e{epoch}.pth')
         self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time:.3f} seconds')
 
-    def set_place_data(self, data, pkl, batch_size, num_workers = 0):
+    def set_place_data(self, data, batch_size, num_workers = 0):
         eval_transform = get_transform('default')
-        evalset = PlaceDataset(data = data, pkl = pkl, transform = eval_transform)
+        
+        evalset = PlaceDataset(data = data, transform = eval_transform)
         self.eval_dataloader = DataLoader(evalset, batch_size = batch_size, shuffle=False, num_workers=num_workers) 
 
     
