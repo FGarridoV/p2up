@@ -22,7 +22,7 @@ trainer = PlaceEmbeddingTrainer(name = None,
                                 verbose = verbose)
 
 # Set the data
-trainer.set_place_data(data = 'Rotterdam_h3_10/spatial_units.pkl', batch_size = 64)
+trainer.set_place_data(data = 'municipalities/Rotterdam_h3_10/spatial_units.pkl', batch_size = 64)
 
 # Define the model
 trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, pooling = pooling, 
