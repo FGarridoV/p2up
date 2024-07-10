@@ -19,9 +19,6 @@ class Utils:
                     FROM 
                         ({union_query}) as u 
                     WHERE 
-                        respondent_id != 151945426 AND 
-                        respondent_id != 815154444 AND 
-                        respondent_id != 59 AND 
                         response IS NOT NULL
                     ORDER BY 
                         u.respondent_id, u.task_pos"""
@@ -77,6 +74,7 @@ class Utils:
                     s.set_id = r.set_id AND
                     s.task_{q} = t.task_id AND
                     r.respondent_id = ts.respondent_id AND
+                    r.cint_id is not null AND
                     ts.{col_tf} - ts.{col_ti} >= {t_tol}
                 """
 
