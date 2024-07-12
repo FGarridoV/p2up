@@ -70,7 +70,7 @@ if __name__ == '__main__':
                                             verbose = verbose)
             
             # Clean the gpu memory
-            trainer.clean_memory()
+            trainer.clean_gpu()
 
             # Set the data
             trainer.set_data(triplets_path = 'data/triplets.csv',
