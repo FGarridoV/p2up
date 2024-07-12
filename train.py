@@ -68,6 +68,9 @@ if __name__ == '__main__':
                                             use_gpu = gpu,
                                             use_tensorboard = use_tensorboard, 
                                             verbose = verbose)
+            
+            # Clean the gpu memory
+            trainer.clean_memory()
 
             # Set the data
             trainer.set_data(triplets_path = 'data/triplets.csv',

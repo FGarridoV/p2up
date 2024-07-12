@@ -55,7 +55,13 @@ class PlaceEmbeddingTrainer(object):
 
         self.logger.log_header(self.name, self.device, use_tensorboard)
 
-        
+
+    def clean_gpu(self):
+        torch.cuda.empty_cache()
+        if torch.backends.mps.is_available():
+            torch.backends.mps.exit
+
+
     def set_data(self, triplets_path, img_transform, data_splits, batch_size, memory_batch_size, data_seed = 21, num_workers = 0):
 
         if memory_batch_size is None:
