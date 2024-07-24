@@ -314,11 +314,9 @@ class PlaceEmbeddingTrainer(object):
             for _, data in enumerate(self.val_loader):
                 p1, p2, p3, choice = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device)
 
-                _, pe1 = self.model(p1)
-                _, pe2 = self.model(p2)
-                _, pe3 = self.model(p3)
+                _, pe = self.model(p1, p2, p3)
 
-                loss, corrects = self.loss_fn(pe1, pe2, pe3, choice) 
+                loss, corrects = self.loss_fn(pe[0], pe[1], pe[2], choice)
                 epoch_loss += loss.item()
                 epoch_corrects += corrects.item()
 
