@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data import DataLoader, random_split
 from models.dataset import TripletDataset
 from models.dataset import PlaceDataset
-from models.models import PlaceEmbedding
+from models.models import PlaceEmbedding, TripletPlaceEmbedding 
 from tools.transforms import get_transform
 from tools.logger import Logger
 from tools.reporter import Reporter
@@ -57,9 +57,11 @@ class PlaceEmbeddingTrainer(object):
 
 
     def clean_gpu(self):
-        torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
         if torch.backends.mps.is_available():
-            torch.backends.mps.exit
+            torch.backends.mps.exit()
 
 
     def set_data(self, triplets_path, img_transform, data_splits, batch_size, memory_batch_size, data_seed = 21, num_workers = 0):
@@ -97,16 +99,16 @@ class PlaceEmbeddingTrainer(object):
         self.logger.log_data(trainset.full_len, len(trainset), len(valset), batch_size, memory_batch_size)
     
 
-    def set_model(self, base_model, base_pretrained, pooling,     
+    def set_model(self, base_model, base_pretrained, img2vec_encoder_layers, pooling,  
                      encoder_layers, projection_layers, use_dropout, 
                      dropout_rate, n_images = 5):
         
-        model_name = PlaceEmbeddingTrainer.model_name(base_model, base_pretrained, pooling, 
+        model_name = PlaceEmbeddingTrainer.model_name(base_model, base_pretrained, img2vec_encoder_layers, pooling, 
                                                       encoder_layers, projection_layers, 
                                                       use_dropout, dropout_rate)
         
-        self.model = PlaceEmbedding(model_name, n_images,
-                                    base_model, base_pretrained, pooling, 
+        self.model = TripletPlaceEmbedding(model_name, n_images,
+                                    base_model, base_pretrained, img2vec_encoder_layers, pooling,
                                     encoder_layers, projection_layers, 
                                     use_dropout, dropout_rate)
         
@@ -114,14 +116,16 @@ class PlaceEmbeddingTrainer(object):
 
         self.trainer_dict.update({'base_model': str(base_model),
                                   'base_pretrained': str(base_pretrained),
+                                  'img2vec_encoder_layers': str(img2vec_encoder_layers),
                                   'pooling': str(pooling),
                                   'encoder_layers': str(encoder_layers),
                                   'projection_layers': str(projection_layers),
                                   'use_dropout': str(use_dropout),
                                   'dropout_rate': float(dropout_rate)})
 
-        self.logger.log_model(self.model.name, base_model, self.model.vec_size,
-                              base_pretrained, pooling, encoder_layers, projection_layers, use_dropout, dropout_rate,
+        self.logger.log_model(self.model.name, base_model, self.model.imgemb_size,
+                              base_pretrained, img2vec_encoder_layers, 
+                              pooling, encoder_layers, projection_layers, use_dropout, dropout_rate,
                               self.model.num_params)
 
     
@@ -249,12 +253,10 @@ class PlaceEmbeddingTrainer(object):
             p1, p2, p3, choice = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device)
 
             # Forward pass
-            _, pe1 = self.model(p1)
-            _, pe2 = self.model(p2)
-            _, pe3 = self.model(p3)
+            _, pe = self.model(p1, p2, p3)
 
             # Loss
-            mb_loss, mb_corrects = self.loss_fn(pe1, pe2, pe3, choice)
+            mb_loss, mb_corrects = self.loss_fn(pe[0], pe[1], pe[2], choice)
             batch_corrects += mb_corrects.item()
             batch_loss += mb_loss
             batch_len += choice.shape[0]
@@ -388,8 +390,8 @@ class PlaceEmbeddingTrainer(object):
         np.random.seed(seed)
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = True
 
 
     @staticmethod
@@ -411,12 +413,19 @@ class PlaceEmbeddingTrainer(object):
     
 
     @staticmethod
-    def model_name(base_model, base_pretrained, pooling, 
-                   encoder_layers, projection_layers, 
+    def model_name(base_model, base_pretrained, img2vec_encoder_layers, pooling,
+                   encoder_layers, projection_layers,
                    use_dropout, dropout_rate):
 
         name = f'model_{base_model}'
         name += 'p' if base_pretrained else 'r'
+
+        if img2vec_encoder_layers is not None:
+            for layer in img2vec_encoder_layers:
+                name += f'_{layer}'
+        else:
+            name += 'None'
+
         name += f'_{pooling}_enc'
 
         if encoder_layers is not None:

@@ -48,8 +48,8 @@ class Logger:
         self.log_info('')
 
 
-    def log_model(self, name, base_model, emb_size, pretrained, pooling, 
-                  encoder_layers, projection_layers, use_dropout, dropout_rate, n_params):
+    def log_model(self, name, base_model, emb_size, pretrained, img2vec_encoder_layers, pooling, 
+                   encoder_layers, projection_layers, use_dropout, dropout_rate, n_params):
         self.log_info(f'Model:') 
         self.log_info(f'    Name: {name}')
         if pretrained:
@@ -57,6 +57,10 @@ class Logger:
         else:
             self.log_info(f'    Image embedding model: {base_model} -> {emb_size} D embedding space')
         self.log_info(f'    Image emb. pretrained: {pretrained}')
+
+        if img2vec_encoder_layers is not None:
+            self.log_info(f'    Image2Vec encoder layers: {emb_size} -> {img2vec_encoder_layers}')
+            emb_size = img2vec_encoder_layers[-1] # OJO
         
         if pooling == 'concat':
             self.log_info(f'    Pooling rule: {pooling} -> {emb_size * 5} D embedding space')
