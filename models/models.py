@@ -8,6 +8,7 @@ class PlaceEmbedding(nn.Module):
                        n_images = 5, 
                        base_model = 'resnet18',
                        base_pretrained = True,
+                       img2vec_encoder_layers = [512], # None
                        pooling = 'max', # ['mean', 'std', 'max', 'min', 'median',  OR 'concat']
                        encoder_layers = [512], # None
                        projection_layers = [32], # None
@@ -21,13 +22,21 @@ class PlaceEmbedding(nn.Module):
 
         # Model parts
         self.img2vec = None
+        self.img2vec_encoder = None
         self.encoder = None
         self.projection = None
 
         # Image embedding model
-        self.img2vec, self.vec_size = ImageEmbeddingModel.get_model(base_model, base_pretrained)
+        self.img2vec, self.imgemb_size = ImageEmbeddingModel.get_model(base_model, base_pretrained)
+
+        # Image2Vec encoder
+        if img2vec_encoder_layers is not None:
+            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate)
+            self.vec_size = img2vec_encoder_layers[-1]
+        else:
+            self.vec_size = self.imgemb_size
         
-        # Pooling of the embeddings
+        # Pooling
         self.pooling = pooling
         self.pooled_embedding_size = self.vec_size * n_images if pooling == 'concat' else self.vec_size * (pooling.count('-') + 1)
 
@@ -48,8 +57,15 @@ class PlaceEmbedding(nn.Module):
         x = x.view(-1, c, h, w)  # Reshape to (batch_size * n_images, c, h, w)
 
         # Get embeddings for all images
-        x = self.img2vec(x)  # Get embeddings for all images
-        x = x.view(batch_size, n_images, -1)  # Reshape back to (batch_size, n_images, embedding_size)
+        x = self.img2vec(x)  
+
+        # Img2Vec encoder
+        if self.img2vec_encoder is not None:
+            x = x.view(x.size(0), -1) # Reshape to (batch_size * n_images, embedding_size)
+            x = self.img2vec_encoder(x)
+
+        # Reshape back to (batch_size, n_images, embedding_size)
+        x = x.view(batch_size, n_images, -1)  
 
         # Pool the embeddings
         if self.pooling == 'concat':
@@ -96,13 +112,17 @@ class MLP(nn.Module):
                 layers.append(nn.Linear(input_size, encoder_layers[i]))
             else:
                 layers.append(nn.Linear(encoder_layers[i-1], encoder_layers[i]))
-            layers.append(nn.ReLU())
+            layers.append(nn.GELU())
             if use_dropout:
                 layers.append(nn.Dropout(dropout_rate))
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
         return self.model(x)
+    
+    @property
+    def num_params(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
     
 
 
@@ -142,5 +162,109 @@ class TripletLoss(nn.Module):
 
         return loss, corrects
     
-    class BinaryLoss(nn.Module):
-        pass
+
+class TripletPlaceEmbedding(nn.Module):
+    def __init__(self, name,
+                       n_images = 5, 
+                       base_model = 'resnet18',
+                       base_pretrained = True,
+                       img2vec_encoder_layers = [512], # None
+                       pooling = 'max', # ['mean', 'std', 'max', 'min', 'median',  OR 'concat']
+                       encoder_layers = [512], # None
+                       projection_layers = [32], # None
+                       use_dropout = False,
+                       dropout_rate = 0.3):
+        super(TripletPlaceEmbedding, self).__init__()
+
+        # General parameters
+        self.name = name
+        self.n_images = n_images
+
+        # Model parts
+        self.img2vec = None
+        self.img2vec_encoder = None
+        self.encoder = None
+        self.projection = None
+
+        # Image embedding model
+        self.img2vec, self.imgemb_size = ImageEmbeddingModel.get_model(base_model, base_pretrained)
+
+        # Image2Vec encoder
+        if img2vec_encoder_layers is not None:
+            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate)
+            self.vec_size = img2vec_encoder_layers[-1]
+        else:
+            self.vec_size = self.imgemb_size
+        
+        # Pooling
+        self.pooling = pooling
+        self.pooled_embedding_size = self.vec_size * n_images if pooling == 'concat' else self.vec_size * (pooling.count('-') + 1)
+
+        # Encoder head
+        if encoder_layers is not None:
+            self.encoder = MLP(self.pooled_embedding_size, encoder_layers, use_dropout, dropout_rate)
+
+        # Projection head
+        if projection_layers is not None:
+            if self.encoder is None:
+                self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate)
+            else:
+                self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate)
+    
+    def forward(self, x1, x2, x3):
+        tr_batch_size = x1.shape[0]
+        x = torch.cat([x1, x2, x3], dim=0)
+
+        batch_size, n_images, c, h, w = x.shape
+        x = x.view(-1, c, h, w)  # Reshape to (batch_size * n_images, c, h, w)
+
+        # Get embeddings for all images
+        x = self.img2vec(x)  
+
+        # Img2Vec encoder
+        if self.img2vec_encoder is not None:
+            x = x.view(x.size(0), -1) # Reshape to (batch_size * n_images, embedding_size)
+            x = self.img2vec_encoder(x)
+
+        # Reshape back to (batch_size, n_images, embedding_size)
+        x = x.view(batch_size, n_images, -1)  
+
+        # Pool the embeddings
+        if self.pooling == 'concat':
+            x = x.view(batch_size, -1)
+        else:
+            methods = self.pooling.split('-')
+            xs = []
+            for m in methods:
+                if m == 'mean':
+                    xs.append(x.mean(dim=1))
+                elif m == 'std':
+                    xs.append(x.std(dim=1))
+                elif m == 'max':
+                    xs.append(x.max(dim=1).values)
+                elif m == 'min':
+                    xs.append(x.min(dim=1).values)
+                elif m == 'median':
+                    xs.append(x.median(dim=1).values)
+            x = torch.cat(xs, dim=1)
+        
+        # Encoder
+        if self.encoder is not None:
+            x = self.encoder(x)
+            x1, x2, x3 = x[:tr_batch_size], x[tr_batch_size:2*tr_batch_size], x[2*tr_batch_size:]
+
+        # Projection
+        if self.projection is not None:
+            proj_x = self.projection(x)
+            proj_x1, proj_x2, proj_x3 = proj_x[:tr_batch_size], proj_x[tr_batch_size:2*tr_batch_size], proj_x[2*tr_batch_size:]
+
+        else:
+            proj_x1, proj_x2, proj_x3 = x1, x2, x3
+
+        return (x1, x2, x3), (proj_x1, proj_x2, proj_x3)
+    
+    @property
+    def num_params(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+
