@@ -2,26 +2,26 @@ from tools.trainer import PlaceEmbeddingTrainer
 import pandas as pd
 import ast
 
-# Hyperparameters
-batch_size = 40
-memory_batch_size = 8
-num_epochs = 3
-img_transform = 'augmentation'    # 'default' or 'augmentation'
-base_model = 'resnet18'      # many options available
-pooling = 'mean'             # 'mean', 'std', 'max', 'min', 'median', 'concat' or any combination
-encoder_layers = [512]       # None or any list of integers
-projection_layers = [256]    # None or any list of integers
-use_dropout = True
-dropout_rate = 0.3
-loss_dist = 'euclidean'      # 'euclidean' or 'cosine'
-loss_margin = 0.2
-loss_swap = True
-lr = 0.001
-lr_embedder = 'no_train'          # any value or 'no_train'
-lr_scheduler_step = 10       # None or any value
-lr_scheduler_gamma = 0.1     # None or any value
-weight_decay = 0.001         # 0.0 or any value
-backward_freq = 'batch'      # 'mbatch' or 'batch'
+# Hyperparameters in a normal run 
+#batch_size = 40
+#memory_batch_size = 8
+#num_epochs = 3
+#img_transform = 'augmentation'    # 'default' or 'augmentation'
+#base_model = 'resnet18'      # many options available
+#pooling = 'mean'             # 'mean', 'std', 'max', 'min', 'median', 'concat' or any combination
+#encoder_layers = [512]       # None or any list of integers
+#projection_layers = [256]    # None or any list of integers
+#use_dropout = True
+#dropout_rate = 0.3
+#loss_margin = 0.2
+##loss_dist = 'euclidean'      # 'euclidean' or 'cosine'
+#loss_swap = True
+#lr = 0.001
+#lr_embedder = 'no_train'          # any value or 'no_train'
+#lr_scheduler_step = 10       # None or any value
+#lr_scheduler_gamma = 0.1     # None or any value
+#weight_decay = 0.001         # 0.0 or any value
+#backward_freq = 'batch'      # 'mbatch' or 'batch'
 
 
 if __name__ == '__main__':
@@ -49,6 +49,7 @@ if __name__ == '__main__':
             num_epochs = int(row['num_epochs'])
             img_transform = row['img_transform']
             base_model = row['base_model']
+            img2vec_encoder_layers = ast.literal_eval(row['img2vec_encoder_layers'])
             pooling = row['pooling']
             encoder_layers = ast.literal_eval(row['encoder_layers'])
             projection_layers = ast.literal_eval(row['projection_layers'])
@@ -80,7 +81,8 @@ if __name__ == '__main__':
                             memory_batch_size = memory_batch_size)
 
             # Define the model
-            trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, pooling = pooling, 
+            trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, 
+                              img2vec_encoder_layers = img2vec_encoder_layers, pooling = pooling, 
                             encoder_layers = encoder_layers, projection_layers = projection_layers,
                             use_dropout = use_dropout, dropout_rate = dropout_rate)
 
