@@ -26,6 +26,13 @@ class ImageEmbeddingModel:
                 m = nn.Sequential(*list(m.features.children()))
             return m, ez
         
+        # ConvNext models
+        elif name.startswith('convnext'):
+            m, ez = ImageEmbeddingModel._convnext_model(name, pretrained)
+            if embedding_only:
+                m = nn.Sequential(*list(m.children())[:-1])
+            return m, ez
+                
         # Other models
         else:
             raise ValueError(f'The model {name} is not supported.')
@@ -81,6 +88,20 @@ class ImageEmbeddingModel:
             return ImageEmbeddingModel._vgg19(pretrained)
         else:
             raise ValueError(f'The model {name} is not supported. (Only: 11, 13, 16 or 19)')
+        
+
+    @staticmethod
+    def _convnext_model(name, pretrained):
+        if name == 'convnext_base':
+            return ImageEmbeddingModel._convnext_base(pretrained)
+        elif name == 'convnext_tiny':
+            return ImageEmbeddingModel._convnext_tiny(pretrained)
+        elif name == 'convnext_small':
+            return ImageEmbeddingModel._convnext_small(pretrained)
+        elif name == 'convnext_large':
+            return ImageEmbeddingModel._convnext_large(pretrained)
+        else:
+            raise ValueError(f'The model {name} is not supported. (Only: _base, _tiny, _small or _large)')
         
         
     @staticmethod
@@ -143,8 +164,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b0
         model = efficientnet_b0()
         if pretrained:
-            from torchvision.models import EfficientNetB0_Weights
-            model = efficientnet_b0(weights=EfficientNetB0_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B0_Weights
+            model = efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT)
             embedding_size = 1280
         return model, embedding_size
     
@@ -154,8 +175,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b1
         model = efficientnet_b1()
         if pretrained:
-            from torchvision.models import EfficientNetB1_Weights
-            model = efficientnet_b1(weights=EfficientNetB1_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B1_Weights
+            model = efficientnet_b1(weights=EfficientNet_B1_Weights.DEFAULT)
             embedding_size = 1280
         return model, embedding_size
     
@@ -165,8 +186,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b2
         model = efficientnet_b2()
         if pretrained:
-            from torchvision.models import EfficientNetB2_Weights
-            model = efficientnet_b2(weights=EfficientNetB2_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B2_Weights
+            model = efficientnet_b2(weights=EfficientNet_B2_Weights.DEFAULT)
             embedding_size = 1408
         return model, embedding_size
     
@@ -176,8 +197,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b3
         model = efficientnet_b3()
         if pretrained:
-            from torchvision.models import EfficientNetB3_Weights
-            model = efficientnet_b3(weights=EfficientNetB3_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B3_Weights
+            model = efficientnet_b3(weights = EfficientNet_B3_Weights.DEFAULT)
             embedding_size = 1536
         return model, embedding_size
     
@@ -187,8 +208,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b4
         model = efficientnet_b4()
         if pretrained:
-            from torchvision.models import EfficientNetB4_Weights
-            model = efficientnet_b4(weights=EfficientNetB4_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B4_Weights
+            model = efficientnet_b4(weights = EfficientNet_B4_Weights.DEFAULT)
             embedding_size = 1792
         return model, embedding_size
 
@@ -198,8 +219,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b5
         model = efficientnet_b5()
         if pretrained:
-            from torchvision.models import EfficientNetB5_Weights
-            model = efficientnet_b5(weights=EfficientNetB5_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B5_Weights
+            model = efficientnet_b5(weights=EfficientNet_B5_Weights.DEFAULT)
             embedding_size = 2048
         return model, embedding_size
     
@@ -209,8 +230,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b6
         model = efficientnet_b6()
         if pretrained:
-            from torchvision.models import EfficientNetB6_Weights
-            model = efficientnet_b6(weights=EfficientNetB6_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B6_Weights
+            model = efficientnet_b6(weights=EfficientNet_B6_Weights.DEFAULT)
             embedding_size = 2304
         return model, embedding_size
 
@@ -220,8 +241,8 @@ class ImageEmbeddingModel:
         from torchvision.models import efficientnet_b7
         model = efficientnet_b7()
         if pretrained:
-            from torchvision.models import EfficientNetB7_Weights
-            model = efficientnet_b7(weights=EfficientNetB7_Weights.DEFAULT)
+            from torchvision.models import EfficientNet_B7_Weights
+            model = efficientnet_b7(weights=EfficientNet_B7_Weights.DEFAULT)
             embedding_size = 2560
         return model, embedding_size
     
@@ -268,3 +289,48 @@ class ImageEmbeddingModel:
             model = vgg19(weights=VGG19_Weights.DEFAULT)
             embedding_size = 512
         return model, embedding_size
+    
+
+    @staticmethod
+    def _convnext_base(pretrained: bool) -> tuple:
+        from torchvision.models import convnext_base
+        model = convnext_base()
+        if pretrained:
+            from torchvision.models import ConvNeXt_Base_Weights
+            model = convnext_base(weights=ConvNeXt_Base_Weights.DEFAULT)
+            embedding_size = 512
+        return model, embedding_size
+    
+
+    @staticmethod
+    def _convnext_tiny(pretrained: bool) -> tuple:
+        from torchvision.models import convnext_tiny
+        model = convnext_tiny()
+        if pretrained:
+            from torchvision.models import ConvNeXt_Tiny_Weights
+            model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
+            embedding_size = 512
+        return model, embedding_size
+    
+
+    @staticmethod
+    def _convnext_small(pretrained: bool) -> tuple:
+        from torchvision.models import convnext_small
+        model = convnext_small()
+        if pretrained:
+            from torchvision.models import ConvNeXt_Small_Weights
+            model = convnext_small(weights=ConvNeXt_Small_Weights.DEFAULT)
+            embedding_size = 512
+        return model, embedding_size
+    
+
+    @staticmethod
+    def _convnext_large(pretrained: bool) -> tuple:
+        from torchvision.models import convnext_large
+        model = convnext_large()
+        if pretrained:
+            from torchvision.models import ConvNeXt_Large_Weights
+            model = convnext_large(weights=ConvNeXt_Large_Weights.DEFAULT)
+            embedding_size = 512
+        return model, embedding_size
+    
