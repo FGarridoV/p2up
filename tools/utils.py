@@ -63,7 +63,8 @@ class Utils:
                     t.place_1 as place_1,
                     t.place_2 as place_2,
                     t.place_3 as place_3, 
-                    r.response_{q} - 1 as response 
+                    r.response_{q} - 1 as response,
+                    t.difficulty as difficulty
                 FROM 
                     Response as r, 
                     Task_Set as s,

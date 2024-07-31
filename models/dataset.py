@@ -48,7 +48,7 @@ class TripletDataset(Dataset):
                 images_place_p = torch.stack(images_place_p)
             triplet.append(images_place_p)
 
-        return triplet[0], triplet[1], triplet[2], row['response']
+        return triplet[0], triplet[1], triplet[2], row['response'], row['difficulty']
 
 
     def __image_downloader(self):
@@ -103,9 +103,5 @@ class PlaceDataset(Dataset):
             images_place = torch.stack(images_place)
 
         return row['h3'], images_place
-
-class PairDataset(Dataset):
-    # TODO: Implement the PairDataset class for openning pairs of places (5 images each)
-    pass
 
 

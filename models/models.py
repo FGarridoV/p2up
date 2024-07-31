@@ -112,7 +112,7 @@ class MLP(nn.Module):
                 layers.append(nn.Linear(input_size, encoder_layers[i]))
             else:
                 layers.append(nn.Linear(encoder_layers[i-1], encoder_layers[i]))
-            layers.append(nn.GELU())
+            layers.append(nn.LeakyReLU())
             if use_dropout:
                 layers.append(nn.Dropout(dropout_rate))
         self.model = nn.Sequential(*layers)
@@ -211,7 +211,7 @@ class TripletPlaceEmbedding(nn.Module):
             else:
                 self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate)
     
-    def forward(self, x1, x2, x3):
+    def forward(self, x1, x2, x3, train=True):
         tr_batch_size = x1.shape[0]
         x = torch.cat([x1, x2, x3], dim=0)
 
@@ -247,21 +247,95 @@ class TripletPlaceEmbedding(nn.Module):
                 elif m == 'median':
                     xs.append(x.median(dim=1).values)
             x = torch.cat(xs, dim=1)
-        
-        # Encoder
-        if self.encoder is not None:
-            x = self.encoder(x)
+
+        if train:
+            # Encoder
+            if self.encoder is not None:
+                x = self.encoder(x)
+
+            # Projection
+            if self.projection is not None:
+                x = self.projection(x)
+            
+            x = F.normalize(x, p=2, dim=1)
+            
             x1, x2, x3 = x[:tr_batch_size], x[tr_batch_size:2*tr_batch_size], x[2*tr_batch_size:]
-
-        # Projection
-        if self.projection is not None:
-            proj_x = self.projection(x)
-            proj_x1, proj_x2, proj_x3 = proj_x[:tr_batch_size], proj_x[tr_batch_size:2*tr_batch_size], proj_x[2*tr_batch_size:]
-
+            return x1, x2, x3
+        
         else:
-            proj_x1, proj_x2, proj_x3 = x1, x2, x3
+            # Encoder
+            if self.encoder is not None:
+                x = self.encoder(x)
+                x = F.normalize(x, p=2, dim=1)
 
-        return (x1, x2, x3), (proj_x1, proj_x2, proj_x3)
+            # Projection
+            if self.projection is not None:
+                px = self.projection(x)
+                px = F.normalize(px, p=2, dim=1)
+            return x, px
+
+            #if not self.training:
+            #    x1, x2, x3 = x[:tr_batch_size], x[tr_batch_size:2*tr_batch_size], x[2*tr_batch_size:]
+            #    proj_x1, proj_x2, proj_x3 = proj_x[:tr_batch_size], proj_x[tr_batch_size:2*tr_batch_size], proj_x[2*tr_batch_size:]
+
+    @property
+    def num_params(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+
+class PlaceEmbeddingBase(nn.Module):
+    def __init__(self, name,
+                       n_images = 5, 
+                       base_model = 'resnet18',
+                       base_pretrained = True,
+                       pooling = 'max'):
+        super(PlaceEmbeddingBase, self).__init__()
+
+        # General parameters
+        self.name = name
+        self.n_images = n_images
+
+        # Model parts
+        self.img2vec = None
+
+        # Image embedding model
+        self.img2vec, self.vec_size = ImageEmbeddingModel.get_model(base_model, base_pretrained)
+        
+        # Pooling
+        self.pooling = pooling
+        self.pooled_embedding_size = self.vec_size * n_images if pooling == 'concat' else self.vec_size * (pooling.count('-') + 1)
+
+
+    def forward(self, x):
+        batch_size, n_images, c, h, w = x.shape
+        x = x.view(-1, c, h, w)
+
+        # Get embeddings for all images
+        x = self.img2vec(x)
+
+        # Reshape back to (batch_size, n_images, embedding_size)
+        x = x.view(batch_size, n_images, -1)
+
+        # Pool the embeddings
+        if self.pooling == 'concat':
+            x = x.view(batch_size, -1)
+        else:
+            methods = self.pooling.split('-')
+            xs = []
+            for m in methods:
+                if m == 'mean':
+                    xs.append(x.mean(dim=1))
+                elif m == 'std':
+                    xs.append(x.std(dim=1))
+                elif m == 'max':
+                    xs.append(x.max(dim=1).values)
+                elif m == 'min':
+                    xs.append(x.min(dim=1).values)
+                elif m == 'median':
+                    xs.append(x.median(dim=1).values)
+            x = torch.cat(xs, dim=1)
+
+        return x
     
     @property
     def num_params(self):

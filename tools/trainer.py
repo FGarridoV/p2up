@@ -60,8 +60,6 @@ class PlaceEmbeddingTrainer(object):
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
             torch.cuda.synchronize()
-        if torch.backends.mps.is_available():
-            torch.backends.mps.exit()
 
 
     def set_data(self, triplets_path, img_transform, data_splits, batch_size, memory_batch_size, data_seed = 21, num_workers = 0):
@@ -129,12 +127,12 @@ class PlaceEmbeddingTrainer(object):
                               self.model.num_params)
 
     
-    def set_loss(self, loss_kind, loss_dist, loss_margin, loss_swap, count_corrects):
+    def set_loss(self, loss_kind, loss_dist, loss_margin, loss_swap, loss_reduction, count_corrects):
 
         if loss_kind == 'triplet':
             from models.models import TripletLoss
             self.loss_fn = TripletLoss(dist = loss_dist, margin = loss_margin, 
-                                       swap = loss_swap, 
+                                       swap = loss_swap, reduction = loss_reduction,
                                        count_corrects = count_corrects)
         else:
             raise ValueError(f'Loss function {loss_kind} not implemented')
@@ -253,10 +251,10 @@ class PlaceEmbeddingTrainer(object):
             p1, p2, p3, choice = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device)
 
             # Forward pass
-            _, pe = self.model(p1, p2, p3)
+            pe1, pe2, pe3 = self.model(p1, p2, p3)
 
             # Loss
-            mb_loss, mb_corrects = self.loss_fn(pe[0], pe[1], pe[2], choice)
+            mb_loss, mb_corrects = self.loss_fn(pe1, pe2, pe3, choice)
             batch_corrects += mb_corrects.item()
             batch_loss += mb_loss
             batch_len += choice.shape[0]
@@ -302,7 +300,7 @@ class PlaceEmbeddingTrainer(object):
         self.logger.log(f'Epoch {epoch} - Train Loss: {epoch_mean_loss:.3f} - Train Accuracy: {epoch_accuracy*100:.3f}%')
         
         return epoch_mean_loss, epoch_accuracy
-        
+
 
     def _eval_one_epoch(self, epoch):
         
@@ -314,9 +312,9 @@ class PlaceEmbeddingTrainer(object):
             for _, data in enumerate(self.val_loader):
                 p1, p2, p3, choice = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device)
 
-                _, pe = self.model(p1, p2, p3)
+                pe1, pe2, pe3 = self.model(p1, p2, p3)
 
-                loss, corrects = self.loss_fn(pe[0], pe[1], pe[2], choice)
+                loss, corrects = self.loss_fn(pe1, pe2, pe3, choice)
                 epoch_loss += loss.item()
                 epoch_corrects += corrects.item()
 

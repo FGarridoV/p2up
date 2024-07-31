@@ -2,38 +2,16 @@ from tools.trainer import PlaceEmbeddingTrainer
 import pandas as pd
 import ast
 
-# Hyperparameters in a normal run 
-#batch_size = 40
-#memory_batch_size = 8
-#num_epochs = 3
-#img_transform = 'augmentation'    # 'default' or 'augmentation'
-#base_model = 'resnet18'      # many options available
-#pooling = 'mean'             # 'mean', 'std', 'max', 'min', 'median', 'concat' or any combination
-#encoder_layers = [512]       # None or any list of integers
-#projection_layers = [256]    # None or any list of integers
-#use_dropout = True
-#dropout_rate = 0.3
-#loss_margin = 0.2
-##loss_dist = 'euclidean'      # 'euclidean' or 'cosine'
-#loss_swap = True
-#lr = 0.001
-#lr_embedder = 'no_train'          # any value or 'no_train'
-#lr_scheduler_step = 10       # None or any value
-#lr_scheduler_gamma = 0.1     # None or any value
-#weight_decay = 0.001         # 0.0 or any value
-#backward_freq = 'batch'      # 'mbatch' or 'batch'
-
-
 if __name__ == '__main__':
 
     # Keep fixed
     seed = 46  
+    base_pretrained = True
     data_splits = {'train': 0.8, 
                 'val': 0.1, 
                 'test': 0.1}
-    base_pretrained = True
     loss_kind = 'triplet'
-    count_corrects = True 
+    count_corrects = True
     optimizer = 'adam'
     verbose = True              # Print the progress
     gpu = True                  # Try to use GPU
@@ -49,10 +27,10 @@ if __name__ == '__main__':
             num_epochs = int(row['num_epochs'])
             img_transform = row['img_transform']
             base_model = row['base_model']
-            img2vec_encoder_layers = ast.literal_eval(row['img2vec_encoder_layers'])
+            img2vec_encoder_layers = ast.literal_eval(row['img2vec_encoder_layers']) if row['img2vec_encoder_layers'] != 'not' else None
             pooling = row['pooling']
-            encoder_layers = ast.literal_eval(row['encoder_layers'])
-            projection_layers = ast.literal_eval(row['projection_layers'])
+            encoder_layers = ast.literal_eval(row['encoder_layers']) if row['encoder_layers'] != 'not' else None
+            projection_layers = ast.literal_eval(row['projection_layers']) if row['projection_layers'] != 'not' else None
             use_dropout = row['use_dropout']
             dropout_rate = float(row['dropout_rate'])
             loss_dist = row['loss_dist']
@@ -88,7 +66,7 @@ if __name__ == '__main__':
 
             # Define the loss
             trainer.set_loss(loss_kind = loss_kind, loss_dist = loss_dist, loss_margin = loss_margin, 
-                            loss_swap = loss_swap, count_corrects = count_corrects)
+                            loss_swap = loss_swap, loss_reduction = 'sum', count_corrects = count_corrects)
 
             # Define the optimizer
             trainer.set_optimizer(optimizer = optimizer, learning_rate = lr, lr_embedder = lr_embedder, 
