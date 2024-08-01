@@ -25,6 +25,7 @@ if __name__ == '__main__':
             batch_size = int(row['batch_size'])
             memory_batch_size = int(row['memory_batch_size']) if row['memory_batch_size'] != 'None' else None
             num_epochs = int(row['num_epochs'])
+            pth_state = row['pth_state'] if row['pth_state'] != 'None' else None
             img_transform = row['img_transform']
             base_model = row['base_model']
             img2vec_encoder_layers = ast.literal_eval(row['img2vec_encoder_layers']) if row['img2vec_encoder_layers'] != 'not' else None
@@ -62,7 +63,7 @@ if __name__ == '__main__':
             trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, 
                               img2vec_encoder_layers = img2vec_encoder_layers, pooling = pooling, 
                             encoder_layers = encoder_layers, projection_layers = projection_layers,
-                            use_dropout = use_dropout, dropout_rate = dropout_rate)
+                            use_dropout = use_dropout, dropout_rate = dropout_rate, pth_state = pth_state)
 
             # Define the loss
             trainer.set_loss(loss_kind = loss_kind, loss_dist = loss_dist, loss_margin = loss_margin, 

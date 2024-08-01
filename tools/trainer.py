@@ -99,7 +99,7 @@ class PlaceEmbeddingTrainer(object):
 
     def set_model(self, base_model, base_pretrained, img2vec_encoder_layers, pooling,  
                      encoder_layers, projection_layers, use_dropout, 
-                     dropout_rate, n_images = 5):
+                     dropout_rate, pth_state = None, n_images = 5):
         
         model_name = PlaceEmbeddingTrainer.model_name(base_model, base_pretrained, img2vec_encoder_layers, pooling, 
                                                       encoder_layers, projection_layers, 
@@ -112,7 +112,11 @@ class PlaceEmbeddingTrainer(object):
         
         self.model = self.model.to(self.device)
 
+        if pth_state is not None:
+            self.model.load_state_dict(torch.load(pth_state, map_location=self.device))
+
         self.trainer_dict.update({'base_model': str(base_model),
+                                  'pth_state': str(pth_state),
                                   'base_pretrained': str(base_pretrained),
                                   'img2vec_encoder_layers': str(img2vec_encoder_layers),
                                   'pooling': str(pooling),
@@ -123,7 +127,7 @@ class PlaceEmbeddingTrainer(object):
 
         self.logger.log_model(self.model.name, base_model, self.model.imgemb_size,
                               base_pretrained, img2vec_encoder_layers, 
-                              pooling, encoder_layers, projection_layers, use_dropout, dropout_rate,
+                              pooling, encoder_layers, projection_layers, use_dropout, dropout_rate, pth_state,
                               self.model.num_params)
 
     

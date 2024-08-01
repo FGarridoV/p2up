@@ -49,13 +49,12 @@ class Logger:
 
 
     def log_model(self, name, base_model, emb_size, pretrained, img2vec_encoder_layers, pooling, 
-                   encoder_layers, projection_layers, use_dropout, dropout_rate, n_params):
+                   encoder_layers, projection_layers, use_dropout, dropout_rate, pth_state, n_params):
         self.log_info(f'Model:') 
         self.log_info(f'    Name: {name}')
-        if pretrained:
-            self.log_info(f'    Image embedding model: {base_model} -> {emb_size} D embedding space')
-        else:
-            self.log_info(f'    Image embedding model: {base_model} -> {emb_size} D embedding space')
+        if pth_state is not None:
+            self.log_info(f'    Training from previous model state: {pth_state}')
+        self.log_info(f'    Image embedding model: {base_model} -> {emb_size} D embedding space')
         self.log_info(f'    Image emb. pretrained: {pretrained}')
 
         if img2vec_encoder_layers is not None:
