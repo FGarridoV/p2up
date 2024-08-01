@@ -111,7 +111,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ResNet18_Weights
             model = resnet18(weights=ResNet18_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
     
 
@@ -122,7 +122,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ResNet34_Weights
             model = resnet34(weights=ResNet34_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
     
 
@@ -133,7 +133,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ResNet50_Weights
             model = resnet50(weights=ResNet50_Weights.DEFAULT)
-            embedding_size = 2048
+        embedding_size = 2048
         return model, embedding_size
     
 
@@ -144,7 +144,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ResNet101_Weights
             model = resnet101(weights=ResNet101_Weights.DEFAULT)
-            embedding_size = 2048
+        embedding_size = 2048
         return model, embedding_size
     
 
@@ -155,7 +155,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ResNet152_Weights
             model = resnet152(weights=ResNet152_Weights.DEFAULT)
-            embedding_size = 2048
+        embedding_size = 2048
         return model, embedding_size
     
 
@@ -166,7 +166,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B0_Weights
             model = efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT)
-            embedding_size = 1280
+        embedding_size = 1280
         return model, embedding_size
     
 
@@ -177,7 +177,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B1_Weights
             model = efficientnet_b1(weights=EfficientNet_B1_Weights.DEFAULT)
-            embedding_size = 1280
+        embedding_size = 1280
         return model, embedding_size
     
 
@@ -188,7 +188,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B2_Weights
             model = efficientnet_b2(weights=EfficientNet_B2_Weights.DEFAULT)
-            embedding_size = 1408
+        embedding_size = 1408
         return model, embedding_size
     
     
@@ -199,7 +199,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B3_Weights
             model = efficientnet_b3(weights = EfficientNet_B3_Weights.DEFAULT)
-            embedding_size = 1536
+        embedding_size = 1536
         return model, embedding_size
     
 
@@ -210,7 +210,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B4_Weights
             model = efficientnet_b4(weights = EfficientNet_B4_Weights.DEFAULT)
-            embedding_size = 1792
+        embedding_size = 1792
         return model, embedding_size
 
 
@@ -221,7 +221,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B5_Weights
             model = efficientnet_b5(weights=EfficientNet_B5_Weights.DEFAULT)
-            embedding_size = 2048
+        embedding_size = 2048
         return model, embedding_size
     
 
@@ -232,7 +232,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B6_Weights
             model = efficientnet_b6(weights=EfficientNet_B6_Weights.DEFAULT)
-            embedding_size = 2304
+        embedding_size = 2304
         return model, embedding_size
 
 
@@ -243,7 +243,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import EfficientNet_B7_Weights
             model = efficientnet_b7(weights=EfficientNet_B7_Weights.DEFAULT)
-            embedding_size = 2560
+        embedding_size = 2560
         return model, embedding_size
     
 
@@ -254,7 +254,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import VGG11_Weights
             model = vgg11(weights=VGG11_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
     
 
@@ -265,7 +265,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import VGG13_Weights
             model = vgg13(weights=VGG13_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
 
 
@@ -276,7 +276,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import VGG16_Weights
             model = vgg16(weights=VGG16_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
 
 
@@ -287,7 +287,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import VGG19_Weights
             model = vgg19(weights=VGG19_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
     
 
@@ -298,7 +298,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ConvNeXt_Base_Weights
             model = convnext_base(weights=ConvNeXt_Base_Weights.DEFAULT)
-            embedding_size = 1024
+        embedding_size = 1024
         return model, embedding_size
     
 
@@ -309,7 +309,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ConvNeXt_Tiny_Weights
             model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
-            embedding_size = 512
+        embedding_size = 512
         return model, embedding_size
     
 
@@ -320,7 +320,7 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ConvNeXt_Small_Weights
             model = convnext_small(weights=ConvNeXt_Small_Weights.DEFAULT)
-            embedding_size = 768
+        embedding_size = 768
         return model, embedding_size
     
 
@@ -331,6 +331,6 @@ class ImageEmbeddingModel:
         if pretrained:
             from torchvision.models import ConvNeXt_Large_Weights
             model = convnext_large(weights=ConvNeXt_Large_Weights.DEFAULT)
-            embedding_size = 1536
+        embedding_size = 1536
         return model, embedding_size
     

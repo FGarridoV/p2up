@@ -156,19 +156,30 @@ class PlaceEmbeddingTrainer(object):
             raise ValueError('Model not set') 
         self.backward_freq = backward_freq
 
+        # Create parameter groups
+        param_groups = [{'params': self.model.parameters(), 'lr': learning_rate}]
+
+        if lr_embedder == 'no_train':
+            for param in self.model.img2vec.parameters():
+                param.requires_grad = False
+        else:
+        # Set a different learning rate for img2vec parameters
+            img2vec_params = list(self.model.img2vec.parameters())
+            other_params = [p for p in self.model.parameters() if p not in img2vec_params]
+            param_groups = [
+                {'params': other_params, 'lr': learning_rate},
+                {'params': img2vec_params, 'lr': lr_embedder}
+            ]
+
         if optimizer == 'adam':
             from torch.optim import Adam
-            self.optimizer = Adam(self.model.parameters(), lr = learning_rate, weight_decay = weight_decay)
+            self.optimizer = Adam(param_groups, weight_decay=weight_decay)
         else:
             raise ValueError(f'Optimizer {optimizer} not implemented')
         
         if lr_scheduler_step is not None and lr_scheduler_gamma is not None:
             from torch.optim.lr_scheduler import StepLR
             self.lr_scheduler = StepLR(self.optimizer, step_size = lr_scheduler_step, gamma = lr_scheduler_gamma)
-        
-        if lr_embedder == 'no_train':
-            for param in self.model.img2vec.parameters():
-                param.requires_grad = False
 
         self.trainer_dict.update({'optimizer': str(optimizer),
                                   'lr': float(learning_rate),
