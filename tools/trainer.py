@@ -118,10 +118,10 @@ class PlaceEmbeddingTrainer(object):
         self.trainer_dict.update({'base_model': str(base_model),
                                   'pth_state': str(pth_state),
                                   'base_pretrained': str(base_pretrained),
-                                  'img2vec_encoder_layers': str(img2vec_encoder_layers),
+                                  'img2vec_encoder_layers': str(img2vec_encoder_layers) if img2vec_encoder_layers is not None else 'not',
                                   'pooling': str(pooling),
-                                  'encoder_layers': str(encoder_layers),
-                                  'projection_layers': str(projection_layers),
+                                  'encoder_layers': str(encoder_layers) if encoder_layers is not None else 'not',
+                                  'projection_layers': str(projection_layers) if projection_layers is not None else 'not',
                                   'use_dropout': str(use_dropout),
                                   'dropout_rate': float(dropout_rate)})
 
@@ -203,17 +203,18 @@ class PlaceEmbeddingTrainer(object):
             train_loss, train_accuracy = self._train_one_epoch(epoch)
             val_loss, val_accuracy = self._eval_one_epoch(epoch)
             epoch_time = time.time() - t0
+            elapsed_time = time.time() - self.unix_0
             self.reporter.add_epoch_indicator(self.name, epoch, train_loss, train_accuracy, val_loss, val_accuracy, epoch_time)
 
             if self.criterion == 'loss':
                 if val_loss < self.best['val_loss']:
-                    self.new_best(epoch, val_loss, val_accuracy, epoch_time)
-                    self.reporter.add_best_model(self.name, epoch, val_loss, val_accuracy, epoch_time, self.best['model_path'])
+                    self.new_best(epoch, val_loss, val_accuracy, elapsed_time)
+                    self.reporter.add_best_model(self.name, epoch, val_loss, val_accuracy, elapsed_time, self.best['model_path'])
 
             elif self.criterion == 'accuracy':
                 if val_accuracy > self.best['val_acc']:
-                    self.new_best(epoch, val_loss, val_accuracy, epoch_time)
-                    self.reporter.add_best_model(self.name, epoch, val_loss, val_accuracy, epoch_time, self.best['model_path'])
+                    self.new_best(epoch, val_loss, val_accuracy, elapsed_time)
+                    self.reporter.add_best_model(self.name, epoch, val_loss, val_accuracy, elapsed_time, self.best['model_path'])
 
             if self.use_tensorboard:
                 self.writer.add_scalar('Loss/train', train_loss, epoch)
@@ -337,7 +338,7 @@ class PlaceEmbeddingTrainer(object):
         self.best['model_path'] = f'{self.trainer_dir}/{self.name}_e{epoch}.pth'
         self.save_model(self.best['model_path'])
         self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec_e{epoch}.pth')
-        self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time:.3f} seconds')
+        self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time/60:.3f} min')
 
     def set_place_data(self, data, batch_size, num_workers = 0):
         eval_transform = get_transform('default')
