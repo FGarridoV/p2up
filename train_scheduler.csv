@@ -6,4 +6,5 @@ id_model;batch_size;memory_batch_size;num_epochs;img_transform;pth_state;base_mo
 2;128;64;30;augmentation;not;resnet18;not;mean-max;[512,512];[256,128];True;0.25;euclidean;0.1;True;0.001;no_train;10;0.1;0.001;batch;done
 3;256;32;30;augmentation;not;resnet18;not;mean-max;[512,512];[256,128];True;0.25;euclidean;0.2;True;0.001;no_train;10;0.1;0.001;batch;done
 4;256;128;10;augmentation;not;resnet34;not;max;[128];[64];True;0.3;euclidean;0.2;True;0.001;0.0001;4;0.1;0.001;mbatch;done
-5;256;128;30;augmentation;results/20240731_193816/20240731_193816_e10.pth;resnet34;not;max;[128];[64];True;0.3;euclidean;0.2;True;0.0001;0.0001;6;0.1;0.001;mbatch;pending
+5;256;128;30;augmentation;results/20240731_193816/20240731_193816_e10.pth;resnet34;not;max;[128];[64];True;0.3;euclidean;0.2;True;0.0001;0.0001;6;0.1;0.001;mbatch;done
+5;256;256;50;augmentation;not;convnext_large;not;max;[256,128,128];[128,64];True;0.3;euclidean;0.2;True;0.001;no_train;6;0.1;0.001;mbatch;pending
