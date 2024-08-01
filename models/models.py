@@ -112,9 +112,11 @@ class MLP(nn.Module):
                 layers.append(nn.Linear(input_size, encoder_layers[i]))
             else:
                 layers.append(nn.Linear(encoder_layers[i-1], encoder_layers[i]))
-            layers.append(nn.LeakyReLU())
-            if use_dropout:
-                layers.append(nn.Dropout(dropout_rate))
+            
+            if i < len(encoder_layers) - 1:
+                layers.append(nn.LeakyReLU())
+                if use_dropout:
+                    layers.append(nn.Dropout(dropout_rate))
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
