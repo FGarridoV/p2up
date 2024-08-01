@@ -25,7 +25,7 @@ if __name__ == '__main__':
             batch_size = int(row['batch_size'])
             memory_batch_size = int(row['memory_batch_size']) if row['memory_batch_size'] != 'None' else None
             num_epochs = int(row['num_epochs'])
-            pth_state = row['pth_state'] if row['pth_state'] != 'None' else None
+            pth_state = row['pth_state'] if row['pth_state'] != 'not' else None
             img_transform = row['img_transform']
             base_model = row['base_model']
             img2vec_encoder_layers = ast.literal_eval(row['img2vec_encoder_layers']) if row['img2vec_encoder_layers'] != 'not' else None
