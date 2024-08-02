@@ -101,9 +101,9 @@ class Logger:
         self.log_info(f'    Backpropagation frequency: {backward_freq}')
         if lr_embedder != lr:
             if lr_embedder == 'no_train':
-                self.log_info(f'    Learning rate embedder: No training')
+                self.log_info(f'    Learning rate img2vec: No training')
             else:
-                self.log_info(f'    Learning rate img embedder: {lr_embedder}')
+                self.log_info(f'    Learning rate img2vec: {lr_embedder}')
         if lr_scheduler_step is not None and lr_scheduler_gamma is not None:
             adjust_lr = f'Every {lr_scheduler_step} epochs, multiply by {lr_scheduler_gamma}'
         self.log_info(f'    Learning rate scheduler: {adjust_lr}')

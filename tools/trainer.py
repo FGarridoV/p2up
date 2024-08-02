@@ -157,23 +157,24 @@ class PlaceEmbeddingTrainer(object):
         self.backward_freq = backward_freq
 
         # Create parameter groups
-        param_groups = [{'params': self.model.parameters(), 'lr': learning_rate}]
+        params = [{'params': self.model.parameters(), 'lr': learning_rate}]
 
         if lr_embedder == 'no_train':
-            for param in self.model.img2vec.parameters():
-                param.requires_grad = False
+            for n, p in self.model.named_parameters():
+                if 'img2vec' in n:
+                    p.requires_grad = False
+        
         else:
-        # Set a different learning rate for img2vec parameters
-            img2vec_params = list(self.model.img2vec.parameters())
-            other_params = [p for p in self.model.parameters() if p not in img2vec_params]
-            param_groups = [
+            img2vec_params = [p for n, p in self.model.named_parameters() if 'img2vec' in n]
+            other_params = [p for n, p in self.model.named_parameters() if 'img2vec' not in n]
+            params = [
                 {'params': other_params, 'lr': learning_rate},
                 {'params': img2vec_params, 'lr': lr_embedder}
             ]
 
         if optimizer == 'adam':
             from torch.optim import Adam
-            self.optimizer = Adam(param_groups, weight_decay=weight_decay)
+            self.optimizer = Adam(params, weight_decay=weight_decay)
         else:
             raise ValueError(f'Optimizer {optimizer} not implemented')
         
@@ -244,7 +245,7 @@ class PlaceEmbeddingTrainer(object):
             self.writer.close()
 
         self.logger.log_finish()
-            
+
 
     def _train_one_epoch(self, epoch):
 
@@ -463,5 +464,40 @@ class PlaceEmbeddingTrainer(object):
         tensorboard_dir = f'{dir_name}/tensorboard'
         from tensorboardX import SummaryWriter
         return SummaryWriter(tensorboard_dir)
+    
+
+
+    #def mineHard(model, anchor, positive, negative, semiHard=False):
+    #cnn = model
+    #cnn.eval()
+    #margin = 0.3
+#
+    #anchor, positive, negative = Variable(anchor).cuda(), Variable(positive).cuda(), Variable(negative).cuda()
+    #output1, output2, output3 = cnn(anchor, positive, negative)
+    #
+    #d_pos = F.pairwise_distance(output1, output2)
+    #d_neg = F.pairwise_distance(output1, output3)
+    #if semiHard:
+    #    pred1 = (d_pos - d_neg).cpu().data
+    #    pred2 = (d_pos + margin - d_neg).cpu().data
+    #    indices = numpy.logical_and((pred1 < 0), (pred2 > 0))
+    #else:
+    #    pred = (d_pos - d_neg).cpu().data
+    #    indices = pred > 0
+    #
+    #if indices.sum() == 0:
+    #    return None, None, None, False
+#
+    #x = torch.arange(0, d_pos.size()[0]).view(d_pos.size()[0], 1)
+    #indices = x.type(torch.cuda.FloatTensor) * indices.type(torch.cuda.FloatTensor)
+    #
+    #nonzero_indices = torch.nonzero(indices)
+    #indices = indices[nonzero_indices[:, 0], :].view(nonzero_indices.size()[0]).type(torch.cuda.LongTensor)
+    #
+    #anchor = torch.index_select(anchor.data, 0, indices)
+    #positive = torch.index_select(positive.data, 0, indices)
+    #negative = torch.index_select(negative.data, 0, indices)
+#
+    #return anchor, positive, negative, True
 
 
