@@ -10,7 +10,7 @@ class Reporter:
     def add_model(self, dict_model):
         if not os.path.exists(self.models):
             cols = ['trainer_name', 'model_name', 'base_model', 'base_pretrained', 'img2vec_encoder_layers',
-                    'pooling', 'encoder_layers', 'projection_layers', 'use_dropout', 
+                    'pooling', 'encoder_layers', 'projection_layers', 'L2_norm', 'use_dropout', 
                     'dropout_rate', 'loss_kind', 'loss_dist', 'loss_margin', 'loss_swap', 
                     'count_corrects', 'optimizer', 'lr', 'lr_embedder',
                     'lr_scheduler_step', 'lr_scheduler_gamma',

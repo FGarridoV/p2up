@@ -49,7 +49,7 @@ class Logger:
 
 
     def log_model(self, name, base_model, emb_size, pretrained, img2vec_encoder_layers, pooling, 
-                   encoder_layers, projection_layers, use_dropout, dropout_rate, pth_state, n_params):
+                   encoder_layers, projection_layers, L2_norm, use_dropout, dropout_rate, pth_state, n_params):
         self.log_info(f'Model:') 
         self.log_info(f'    Name: {name}')
         if pth_state is not None:
@@ -73,6 +73,8 @@ class Logger:
                 
         if projection_layers is not None:
             self.log_info(f'    Projection layers: {encoder_layers[-1]} -> {projection_layers}')
+
+        self.log_info(f'    L2 normalization: {L2_norm}')
 
         if use_dropout:
             self.log_info(f'    Dropout rate: {dropout_rate}')
