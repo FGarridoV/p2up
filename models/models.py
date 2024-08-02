@@ -73,6 +73,7 @@ class TripletPlaceEmbedding(nn.Module):
                        pooling = 'max', # ['mean', 'std', 'max', 'min', 'median',  OR 'concat']
                        encoder_layers = [512], # None
                        projection_layers = [32], # None
+                       L2_norm = True,
                        use_dropout = False,
                        dropout_rate = 0.3):
         super(TripletPlaceEmbedding, self).__init__()
@@ -80,6 +81,7 @@ class TripletPlaceEmbedding(nn.Module):
         # General parameters
         self.name = name
         self.n_images = n_images
+        self.L2_norm = L2_norm
 
         # Model parts
         self.img2vec = None
@@ -168,7 +170,8 @@ class TripletPlaceEmbedding(nn.Module):
             if self.projection is not None:
                 x = self.projection(x)
             
-            x = F.normalize(x, p=2, dim=1)
+            if self.L2_norm:
+                x = F.normalize(x, p=2, dim=1)
             
             x1, x2, x3 = x[:tr_batch_size], x[tr_batch_size:2*tr_batch_size], x[2*tr_batch_size:]
             return x1, x2, x3
@@ -177,12 +180,12 @@ class TripletPlaceEmbedding(nn.Module):
             # Encoder
             if self.encoder is not None:
                 x = self.encoder(x)
-                x = F.normalize(x, p=2, dim=1)
 
             # Projection
             if self.projection is not None:
                 px = self.projection(x)
-                px = F.normalize(px, p=2, dim=1)
+                if self.L2_norm:
+                    px = F.normalize(px, p=2, dim=1)
             return x, px
 
             #if not self.training:
@@ -262,6 +265,7 @@ class PlaceEmbedding(nn.Module):
                        pooling = 'max', # ['mean', 'std', 'max', 'min', 'median',  OR 'concat']
                        encoder_layers = [512], # None
                        projection_layers = [32], # None
+                        L2_norm = True,
                        use_dropout = False,
                        dropout_rate = 0.3):
         super(PlaceEmbedding, self).__init__()
@@ -269,6 +273,7 @@ class PlaceEmbedding(nn.Module):
         # General parameters
         self.name = name
         self.n_images = n_images
+        self.L2_norm = L2_norm
 
         # Model parts
         self.img2vec = None
@@ -300,6 +305,15 @@ class PlaceEmbedding(nn.Module):
                 self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate)
             else:
                 self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate)
+        
+        if self.img2vec is not None:
+            self.img2vec.name = 'img2vec'
+        if self.img2vec_encoder is not None:
+            self.img2vec_encoder.name = 'img2vec_encoder'
+        if self.encoder is not None:
+            self.encoder.name = 'encoder'
+        if self.projection is not None:
+            self.projection.name = 'projection'
 
 
     def forward(self, x):
@@ -342,12 +356,12 @@ class PlaceEmbedding(nn.Module):
 
         # Projection
         if self.projection is not None:
-            proj_x = self.projection(x)
-        else:
-            proj_x = x
-
-        return x, proj_x
+            px = self.projection(x)
+            if self.L2_norm:
+                px = F.normalize(px, p=2, dim=1)
+        return x, px
     
+
     @property
     def num_params(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
