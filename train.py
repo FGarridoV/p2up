@@ -11,6 +11,7 @@ if __name__ == '__main__':
                 'val': 0.1, 
                 'test': 0.1}
     loss_kind = 'triplet'
+    triplet_miner = True
     count_corrects = True
     optimizer = 'adam'
     verbose = True              # Print the progress
@@ -60,7 +61,8 @@ if __name__ == '__main__':
                             img_transform = img_transform, 
                             data_splits = data_splits, 
                             batch_size = batch_size, 
-                            memory_batch_size = memory_batch_size)
+                            memory_batch_size = memory_batch_size,
+                            triplet_miner = triplet_miner)
 
             # Define the model
             trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, 

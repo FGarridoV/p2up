@@ -6,6 +6,7 @@ import numpy as np
 from torch.utils.data import DataLoader, random_split
 from models.dataset import TripletDataset
 from models.dataset import PlaceDataset
+from models.dataset import TripletMinerSampler
 from models.models import PlaceEmbedding, TripletPlaceEmbedding 
 from tools.transforms import get_transform
 from tools.logger import Logger
@@ -37,6 +38,7 @@ class PlaceEmbeddingTrainer(object):
         self.memory_batch_size = None
         self.train_loader = None
         self.val_loader = None
+        self.triplet_miner = None
 
         # Model, loss, optimizer
         self.model = None
@@ -62,7 +64,7 @@ class PlaceEmbeddingTrainer(object):
             torch.cuda.synchronize()
 
 
-    def set_data(self, triplets_path, img_transform, data_splits, batch_size, memory_batch_size, data_seed = 21, num_workers = 0):
+    def set_data(self, triplets_path, img_transform, data_splits, batch_size, memory_batch_size, triplet_miner, data_seed = 21, num_workers = 0):
 
         if memory_batch_size is None:
             memory_batch_size = batch_size
@@ -75,12 +77,16 @@ class PlaceEmbeddingTrainer(object):
 
         trainset = TripletDataset(data_splits['train'], data = triplets_path, transform = train_transform, train = True, seed = data_seed)
         valset = TripletDataset(data_splits['val'], data = triplets_path, transform = val_transform, train = False, seed = data_seed)
-                
+        
         self.batch_size = batch_size
         self.memory_batch_size = memory_batch_size
+        self.triplet_miner = triplet_miner
 
         batch = batch_size if memory_batch_size is None else memory_batch_size
-        self.train_loader = DataLoader(trainset, batch_size = batch, shuffle=True, num_workers=num_workers) 
+        if self.triplet_miner:
+            self.train_loader = DataLoader(trainset, batch_size = batch, shuffle=False, num_workers=num_workers)
+        else:
+            self.train_loader = DataLoader(trainset, batch_size = batch, shuffle=True, num_workers=num_workers) 
         self.val_loader = DataLoader(valset, batch_size = batch, shuffle=False, num_workers=num_workers)
 
         if memory_batch_size == batch_size:
@@ -163,6 +169,9 @@ class PlaceEmbeddingTrainer(object):
             self.loss_fn = TripletLoss(dist = loss_dist, margin = loss_margin, 
                                        swap = loss_swap, reduction = loss_reduction,
                                        count_corrects = count_corrects)
+            self.loss_fn_no_red = TripletLoss(dist = loss_dist, margin = loss_margin,
+                                                    swap = loss_swap, reduction = 'none',
+                                                    count_corrects = False)
         else:
             raise ValueError(f'Loss function {loss_kind} not implemented')
         
@@ -271,12 +280,33 @@ class PlaceEmbeddingTrainer(object):
 
         self.logger.log_finish()
 
+    
+    def _mining_one_epoch(self):
+        losses_and_indices = []
+        for mbi, data in enumerate(self.train_loader):
+            p1, p2, p3, choice = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device)
+            with torch.no_grad():
+                pe1, pe2, pe3 = self.model(p1, p2, p3)
+                mb_loss, _ = self.loss_fn_no_red(pe1, pe2, pe3, choice)
+                # Iterate over each item in the batch
+                for i in range(p1.size(0)):
+                    losses_and_indices.append((mb_loss[i].item(), mbi * self.train_loader.batch_size + i))
+
+        # Sort indices based on loss values
+        losses_and_indices.sort(key=lambda x: x[0])
+        #hard_indices = [lai for lai in losses_and_indices if lai[0] >= self.loss_fn.margin]
+        #semi_hard_indices = [lai for lai in losses_and_indices if 0 < lai[0] < self.loss_fn.margin]
+        #easy_indices = [lai for lai in losses_and_indices if lai[0] <= 0]
+        sorted_indices = [idx for _, idx in losses_and_indices]
+
+        return sorted_indices
+
 
     def _train_one_epoch(self, epoch):
 
         self.logger.log_info(f'EPOCH {epoch}')
 
-        self.model.train()
+       
         self.logger.log(f'Epoch {epoch} - lr: {self.optimizer.param_groups[0]["lr"]:.6f}')
                         
         mb_in_b = self.batch_size / self.memory_batch_size
@@ -287,6 +317,12 @@ class PlaceEmbeddingTrainer(object):
         batch_corrects = 0
         batch_len = 0
 
+        if self.triplet_miner:
+            sorted_indices = self._mining_one_epoch()
+            sorted_sampler = TripletMinerSampler(self.train_loader.dataset, sorted_indices)
+            self.train_loader = DataLoader(self.train_loader.dataset, batch_size=self.train_loader.batch_size, sampler=sorted_sampler)
+        
+        self.model.train()
         self.optimizer.zero_grad()
         for mbi, data in enumerate(self.train_loader, start=1):
 

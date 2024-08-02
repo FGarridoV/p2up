@@ -4,7 +4,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, Sampler
 
 from tools.utils import Utils
 
@@ -48,8 +48,8 @@ class TripletDataset(Dataset):
                 images_place_p = torch.stack(images_place_p)
             triplet.append(images_place_p)
 
-        return triplet[0], triplet[1], triplet[2], row['response'], row['difficulty']
-
+        return triplet[0], triplet[1], triplet[2], row['response']
+    
 
     def __image_downloader(self):
         image_folder_path = self.data['image_1_p1'].iloc[0].split('/')[:-3]
@@ -79,6 +79,18 @@ class TripletDataset(Dataset):
         rect = plt.Rectangle((0.11, 0.1+0.27*(2-choice)), 0.81, 1/4, linewidth=1, edgecolor='r', facecolor='none', zorder=10)
         fig.add_artist(rect)
         plt.show()
+
+
+class TripletMinerSampler(Sampler):
+    def __init__(self, data_source, sorted_indices):
+        self.data_source = data_source
+        self.sorted_indices = sorted_indices
+
+    def __iter__(self):
+        return iter(self.sorted_indices)
+
+    def __len__(self):
+        return len(self.data_source)
 
     
 class PlaceDataset(Dataset):
