@@ -32,6 +32,7 @@ if __name__ == '__main__':
             pooling = row['pooling']
             encoder_layers = ast.literal_eval(row['encoder_layers']) if row['encoder_layers'] != 'not' else None
             projection_layers = ast.literal_eval(row['projection_layers']) if row['projection_layers'] != 'not' else None
+            L2_norm = row['L2_norm']
             use_dropout = row['use_dropout']
             dropout_rate = float(row['dropout_rate'])
             loss_dist = row['loss_dist']
