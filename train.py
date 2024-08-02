@@ -35,6 +35,8 @@ if __name__ == '__main__':
             L2_norm = row['L2_norm']
             use_dropout = row['use_dropout']
             dropout_rate = float(row['dropout_rate'])
+            act_f_encoder = row['act_f_encoder']
+            act_f_projection = row['act_f_projection']
             loss_dist = row['loss_dist']
             loss_margin = float(row['loss_margin'])
             loss_swap = row['loss_swap']
@@ -64,7 +66,8 @@ if __name__ == '__main__':
             trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, 
                               img2vec_encoder_layers = img2vec_encoder_layers, pooling = pooling, 
                             encoder_layers = encoder_layers, projection_layers = projection_layers, L2_norm=L2_norm,
-                            use_dropout = use_dropout, dropout_rate = dropout_rate, pth_state = pth_state)
+                            use_dropout = use_dropout, dropout_rate = dropout_rate, act_f_encoder = act_f_encoder, act_f_projection = act_f_projection,
+                            pth_state = pth_state)
 
             # Define the loss
             trainer.set_loss(loss_kind = loss_kind, loss_dist = loss_dist, loss_margin = loss_margin, 

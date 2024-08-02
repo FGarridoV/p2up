@@ -98,7 +98,7 @@ class PlaceEmbeddingTrainer(object):
     
 
     def set_model(self, base_model, base_pretrained, img2vec_encoder_layers, pooling,  
-                     encoder_layers, projection_layers, L2_norm, use_dropout, 
+                     encoder_layers, projection_layers, L2_norm, use_dropout, act_f_encoder, act_f_projection,
                      dropout_rate, pth_state = None, n_images = 5):
         
         model_name = PlaceEmbeddingTrainer.model_name(base_model, base_pretrained, img2vec_encoder_layers, pooling, 
@@ -108,7 +108,7 @@ class PlaceEmbeddingTrainer(object):
         self.model = TripletPlaceEmbedding(model_name, n_images,
                                     base_model, base_pretrained, img2vec_encoder_layers, pooling,
                                     encoder_layers, projection_layers, L2_norm, 
-                                    use_dropout, dropout_rate)
+                                    use_dropout, dropout_rate, act_f_encoder, act_f_projection)
         
         self.model = self.model.to(self.device)
 
@@ -124,15 +124,18 @@ class PlaceEmbeddingTrainer(object):
                                   'projection_layers': str(projection_layers) if projection_layers is not None else 'not',
                                   'L2_norm': str(L2_norm),
                                   'use_dropout': str(use_dropout),
-                                  'dropout_rate': float(dropout_rate)})
+                                  'dropout_rate': float(dropout_rate),
+                                  'act_f_encoder': str(act_f_encoder),
+                                  'act_f_projection': str(act_f_projection)})
 
         self.logger.log_model(self.model.name, base_model, self.model.imgemb_size,
                               base_pretrained, img2vec_encoder_layers, 
-                              pooling, encoder_layers, projection_layers, L2_norm, use_dropout, dropout_rate, pth_state,
-                              self.model.num_params)
+                              pooling, encoder_layers, projection_layers, L2_norm, 
+                              use_dropout, dropout_rate, act_f_encoder, act_f_projection,
+                              pth_state, self.model.num_params)
         
     def set_model_for_application(self, name, base_model, img2vec_encoder_layers, pooling, 
-                                  encoder_layers, projection_layers, L2_norm):
+                                  encoder_layers, projection_layers, act_f_encoder, act_f_projection, L2_norm):
         
         n_images = 5
         base_pretrained = False
@@ -143,13 +146,14 @@ class PlaceEmbeddingTrainer(object):
         self.model = PlaceEmbedding(name, n_images,
                                     base_model, base_pretrained, img2vec_encoder_layers, pooling,
                                     encoder_layers, projection_layers, L2_norm, 
-                                    use_dropout, dropout_rate)
+                                    use_dropout, dropout_rate, act_f_encoder, act_f_projection)
         
         self.model = self.model.to(self.device)
 
         self.logger.log_model(self.model.name, base_model, self.model.imgemb_size,
                               base_pretrained, img2vec_encoder_layers, 
-                              pooling, encoder_layers, projection_layers, L2_norm, use_dropout, dropout_rate, pth_state,
+                              pooling, encoder_layers, projection_layers, act_f_encoder, act_f_projection,
+                              L2_norm, use_dropout, dropout_rate, pth_state,
                               self.model.num_params)
     
     def set_loss(self, loss_kind, loss_dist, loss_margin, loss_swap, loss_reduction, count_corrects):

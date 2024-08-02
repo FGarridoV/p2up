@@ -4,7 +4,7 @@ from torch.nn import functional as F
 from models.vision_models import ImageEmbeddingModel
 
 class MLP(nn.Module):
-    def __init__(self, input_size, encoder_layers, use_dropout, dropout_rate):
+    def __init__(self, input_size, encoder_layers, use_dropout, dropout_rate, acf_f_last = True):
         super(MLP, self).__init__()
         layers = []
         for i in range(len(encoder_layers)):
@@ -13,7 +13,7 @@ class MLP(nn.Module):
             else:
                 layers.append(nn.Linear(encoder_layers[i-1], encoder_layers[i]))
             
-            if i < len(encoder_layers) - 1:
+            if i < len(encoder_layers) - 1 or acf_f_last:
                 layers.append(nn.LeakyReLU())
                 if use_dropout:
                     layers.append(nn.Dropout(dropout_rate))
@@ -75,7 +75,9 @@ class TripletPlaceEmbedding(nn.Module):
                        projection_layers = [32], # None
                        L2_norm = True,
                        use_dropout = False,
-                       dropout_rate = 0.3):
+                       dropout_rate = 0.3,
+                       act_f_last_encoder = True,
+                       act_f_last_projection = True):
         super(TripletPlaceEmbedding, self).__init__()
 
         # General parameters
@@ -94,7 +96,7 @@ class TripletPlaceEmbedding(nn.Module):
 
         # Image2Vec encoder
         if img2vec_encoder_layers is not None:
-            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate)
+            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate, act_f_last_encoder)
             self.vec_size = img2vec_encoder_layers[-1]
         else:
             self.vec_size = self.imgemb_size
@@ -105,14 +107,14 @@ class TripletPlaceEmbedding(nn.Module):
 
         # Encoder head
         if encoder_layers is not None:
-            self.encoder = MLP(self.pooled_embedding_size, encoder_layers, use_dropout, dropout_rate)
+            self.encoder = MLP(self.pooled_embedding_size, encoder_layers, use_dropout, dropout_rate, act_f_last_encoder)
 
         # Projection head
         if projection_layers is not None:
             if self.encoder is None:
-                self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate)
+                self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate, act_f_last_projection)
             else:
-                self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate)
+                self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate, act_f_last_projection)
         
         if self.img2vec is not None:
             self.img2vec.name = 'img2vec'
@@ -267,7 +269,9 @@ class PlaceEmbedding(nn.Module):
                        projection_layers = [32], # None
                         L2_norm = True,
                        use_dropout = False,
-                       dropout_rate = 0.3):
+                       dropout_rate = 0.3,
+                       act_f_last_encoder = True,
+                       act_f_last_projection = True):
         super(PlaceEmbedding, self).__init__()
 
         # General parameters
@@ -286,7 +290,7 @@ class PlaceEmbedding(nn.Module):
 
         # Image2Vec encoder
         if img2vec_encoder_layers is not None:
-            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate)
+            self.img2vec_encoder = MLP(self.imgemb_size, img2vec_encoder_layers, use_dropout, dropout_rate, act_f_last_encoder)
             self.vec_size = img2vec_encoder_layers[-1]
         else:
             self.vec_size = self.imgemb_size
@@ -297,14 +301,14 @@ class PlaceEmbedding(nn.Module):
 
         # Encoder head
         if encoder_layers is not None:
-            self.encoder = MLP(self.pooled_embedding_size, encoder_layers, use_dropout, dropout_rate)
+            self.encoder = MLP(self.pooled_embedding_size, encoder_layers, use_dropout, dropout_rate, act_f_last_encoder)
 
         # Projection head
         if projection_layers is not None:
             if self.encoder is None:
-                self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate)
+                self.projection = MLP(self.pooled_embedding_size, projection_layers, use_dropout, dropout_rate, act_f_last_projection)
             else:
-                self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate)
+                self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate, act_f_last_projection)
         
         if self.img2vec is not None:
             self.img2vec.name = 'img2vec'
