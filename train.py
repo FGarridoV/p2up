@@ -63,7 +63,7 @@ if __name__ == '__main__':
             # Define the model
             trainer.set_model(base_model = base_model, base_pretrained = base_pretrained, 
                               img2vec_encoder_layers = img2vec_encoder_layers, pooling = pooling, 
-                            encoder_layers = encoder_layers, projection_layers = projection_layers,
+                            encoder_layers = encoder_layers, projection_layers = projection_layers, L2_norm=L2_norm,
                             use_dropout = use_dropout, dropout_rate = dropout_rate, pth_state = pth_state)
 
             # Define the loss
