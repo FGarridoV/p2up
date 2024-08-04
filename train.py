@@ -11,7 +11,7 @@ if __name__ == '__main__':
                 'val': 0.1, 
                 'test': 0.1}
     loss_kind = 'triplet'
-    triplet_miner = True
+    triplet_miner = False
     count_corrects = True
     optimizer = 'adam'
     verbose = True              # Print the progress
