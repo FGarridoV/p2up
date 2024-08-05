@@ -294,9 +294,6 @@ class PlaceEmbeddingTrainer(object):
 
         # Sort indices based on loss values
         losses_and_indices.sort(key=lambda x: x[0])
-        #hard_indices = [lai for lai in losses_and_indices if lai[0] >= self.loss_fn.margin]
-        #semi_hard_indices = [lai for lai in losses_and_indices if 0 < lai[0] < self.loss_fn.margin]
-        #easy_indices = [lai for lai in losses_and_indices if lai[0] <= 0]
         sorted_indices = [idx for _, idx in losses_and_indices]
 
         return sorted_indices
@@ -413,10 +410,11 @@ class PlaceEmbeddingTrainer(object):
         self.save_img2vec(f'{self.trainer_dir}/{self.name}_img2vec_e{epoch}.pth')
         self.logger.log(f'New best model stored at epoch {epoch} - val_loss: {val_loss:.3f} - val_acc: {val_acc*100:.3f}% - elapsed_time: {elapsed_time/60:.3f} min')
 
+
     def set_place_data(self, data, batch_size, num_workers = 0):
         eval_transform = get_transform('default')
         
-        evalset = PlaceDataset(data = data, transform = eval_transform)
+        evalset = PlaceDataset(data = data, root = '../', transform = eval_transform)
         self.eval_dataloader = DataLoader(evalset, batch_size = batch_size, shuffle=False, num_workers=num_workers) 
 
     
