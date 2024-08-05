@@ -40,7 +40,7 @@ trainer.set_model_for_application(name = None,
 
 # eval on the city
 modelpth = f'results/{trainer}_e{epoch_model}.pth'
-responses = trainer.apply_model(modelpth, municipality)
+responses = trainer.apply_model(modelpth)
 
 # Create application folder if it does not exist
 if not os.path.exists('applications'):
