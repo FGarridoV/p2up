@@ -5,9 +5,9 @@ import pickle
 import os
 
 municipality = 'Rotterdam'
-trainer = '20240731_012747'
-epoch_model = 4
-batch_size = 64
+trainer = '20240803_161225'
+epoch_model = 6
+batch_size = 128
 
 df = pd.read_csv(f'results/models.csv')
 model_hparams = df[df['trainer_name'] == trainer].iloc[0]
@@ -25,7 +25,6 @@ trainer = PlaceEmbeddingTrainer(name = None,
                                 use_tensorboard = False, 
                                 verbose = True)
 
-# Set the data
 trainer.set_place_data(data = f'municipalities/{municipality}_h3_10/spatial_units.pkl', batch_size = batch_size)
 
 # Define the model
