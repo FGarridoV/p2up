@@ -38,7 +38,8 @@ trainer.set_model_for_application(name = None,
                                     encoder_layers = encoder_layers,
                                     projection_layers = projection_layers,
                                     act_f_encoder = act_f_encoder,
-                                    act_f_projection = act_f_projection, L2_norm= L2_norm)
+                                    act_f_projection = act_f_projection, 
+                                    L2_norm= L2_norm)
 
 # eval on the city
 modelpth = f'results/{trainer_name}/{trainer_name}_e{epoch_model}.pth'

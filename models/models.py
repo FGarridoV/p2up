@@ -267,7 +267,7 @@ class PlaceEmbedding(nn.Module):
                        pooling = 'max', # ['mean', 'std', 'max', 'min', 'median',  OR 'concat']
                        encoder_layers = [512], # None
                        projection_layers = [32], # None
-                        L2_norm = True,
+                       L2_norm = True,
                        use_dropout = False,
                        dropout_rate = 0.3,
                        act_f_last_encoder = True,

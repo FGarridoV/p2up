@@ -148,10 +148,19 @@ class PlaceEmbeddingTrainer(object):
         dropout_rate = 0
         pth_state = None
 
-        self.model = PlaceEmbedding(name, n_images,
-                                    base_model, base_pretrained, img2vec_encoder_layers, pooling,
-                                    encoder_layers, projection_layers, L2_norm, 
-                                    use_dropout, dropout_rate, act_f_encoder, act_f_projection)
+        self.model = PlaceEmbedding(name = name, 
+                                    n_images=n_images,
+                                    base_model = base_model,
+                                    base_pretrained = base_pretrained,
+                                    img2vec_encoder_layers = img2vec_encoder_layers,
+                                    pooling = pooling,
+                                    encoder_layers = encoder_layers,
+                                    projection_layers = projection_layers,
+                                    L2_norm = L2_norm, 
+                                    use_dropout = use_dropout,
+                                    dropout_rate = dropout_rate,
+                                    act_f_encoder = act_f_encoder,
+                                    act_f_projection = act_f_projection)
         
         self.model = self.model.to(self.device)
 
