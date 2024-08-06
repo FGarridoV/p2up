@@ -116,14 +116,14 @@ class TripletPlaceEmbedding(nn.Module):
             else:
                 self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate, act_f_last_projection)
         
-        #if self.img2vec is not None:
-        #    self.img2vec.name = 'img2vec'
-        #if self.img2vec_encoder is not None:
-        #    self.img2vec_encoder.name = 'img2vec_encoder'
-        #if self.encoder is not None:
-        #    self.encoder.name = 'encoder'
-        #if self.projection is not None:
-        #    self.projection.name = 'projection'
+        if self.img2vec is not None:
+            self.img2vec.name = 'img2vec'
+        if self.img2vec_encoder is not None:
+            self.img2vec_encoder.name = 'img2vec_encoder'
+        if self.encoder is not None:
+            self.encoder.name = 'encoder'
+        if self.projection is not None:
+            self.projection.name = 'projection'
 
     
     def forward(self, x1, x2, x3, train=True):
@@ -310,14 +310,14 @@ class PlaceEmbedding(nn.Module):
             else:
                 self.projection = MLP(encoder_layers[-1], projection_layers, use_dropout, dropout_rate, act_f_last_projection)
         
-        #if self.img2vec is not None:
-        #    self.img2vec.name = 'img2vec'
-        #if self.img2vec_encoder is not None:
-        #    self.img2vec_encoder.name = 'img2vec_encoder'
-        #if self.encoder is not None:
-        #    self.encoder.name = 'encoder'
-        #if self.projection is not None:
-        #    self.projection.name = 'projection'
+        if self.img2vec is not None:
+            self.img2vec.name = 'img2vec'
+        if self.img2vec_encoder is not None:
+            self.img2vec_encoder.name = 'img2vec_encoder'
+        if self.encoder is not None:
+            self.encoder.name = 'encoder'
+        if self.projection is not None:
+            self.projection.name = 'projection'
 
 
     def forward(self, x):
@@ -369,5 +369,7 @@ class PlaceEmbedding(nn.Module):
     @property
     def num_params(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
+    
 
 
+    
