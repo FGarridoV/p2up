@@ -71,8 +71,10 @@ class Logger:
             if encoder_layers is not None:
                 self.log_info(f'    Encoder layers: {size} -> {encoder_layers}')
                 
-        if projection_layers is not None:
+        if projection_layers is not None and encoder_layers is not None:
             self.log_info(f'    Projection layers: {encoder_layers[-1]} -> {projection_layers}')
+        else:
+            self.log_info(f'    Projection layers: {size} -> {projection_layers}')
 
         self.log_info(f'    L2 normalization: {L2_norm}')
 
