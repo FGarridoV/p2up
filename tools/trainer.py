@@ -437,7 +437,8 @@ class PlaceEmbeddingTrainer(object):
 
     
     def apply_model(self, modelpth):
-        self.model.load_state_dict(torch.load(modelpth))
+        if modelpth is not None:
+            self.model.load_state_dict(torch.load(modelpth))
         self.model = self.model.to(self.device)
         self.logger.log(f'Model loaded from {modelpth}')
         self.model.eval()
@@ -446,7 +447,7 @@ class PlaceEmbeddingTrainer(object):
             b = 0
             self.logger.log(f'Applying model to {len(self.eval_dataloader.dataset)} places')
             for _, data in enumerate(self.eval_dataloader):
-                self.logger.log("Processing batch {b}")
+                self.logger.log(f"Processing batch {b}")
                 h3_code, place = data[0], data[1].to(self.device)
                 e, pe = self.model(place)
                 responses.append((h3_code, e.to('cpu').numpy(), pe.to('cpu').numpy()))
