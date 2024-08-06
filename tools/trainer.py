@@ -147,7 +147,7 @@ class PlaceEmbeddingTrainer(object):
         dropout_rate = 0
         pth_state = None
 
-        self.model = TripletPlaceEmbedding(name = name, 
+        self.model = PlaceEmbedding(name = name, 
                                     n_images=n_images,
                                     base_model = base_model,
                                     base_pretrained = base_pretrained,

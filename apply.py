@@ -28,7 +28,7 @@ trainer = PlaceEmbeddingTrainer(name = None,
                                 use_tensorboard = False, 
                                 verbose = True)
 
-#trainer.set_place_data(data = f'municipalities/{municipality}_h3_10/spatial_units.pkl', batch_size = batch_size)
+trainer.set_place_data(data = f'municipalities/{municipality}_h3_10/spatial_units.pkl', batch_size = batch_size)
 
 # Define the model
 trainer.set_model_for_application(name = None,
