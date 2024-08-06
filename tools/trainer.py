@@ -140,11 +140,10 @@ class PlaceEmbeddingTrainer(object):
                               use_dropout, dropout_rate, act_f_encoder, act_f_projection,
                               pth_state, self.model.num_params)
         
-    def set_model_for_application(self, name, base_model, img2vec_encoder_layers, pooling, 
+    def set_model_for_application(self, name, base_model, base_pretrained, img2vec_encoder_layers, pooling, 
                                   encoder_layers, projection_layers, act_f_encoder, act_f_projection, L2_norm):
         
         n_images = 5
-        base_pretrained = False
         use_dropout = False
         dropout_rate = 0
         pth_state = None

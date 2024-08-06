@@ -13,6 +13,7 @@ df = pd.read_csv(f'results/models.csv')
 model_hparams = df[df['trainer_name'] == trainer_name].iloc[0]
 
 base_model = model_hparams['base_model']
+base_pretrained = model_hparams['base_pretrained']
 pooling = model_hparams['pooling']
 img2vec_encoder_layers = ast.literal_eval(model_hparams['img2vec_encoder_layers']) if model_hparams['img2vec_encoder_layers'] != 'not' else None
 encoder_layers = ast.literal_eval(model_hparams['encoder_layers']) if model_hparams['encoder_layers'] != 'not' else None
@@ -31,6 +32,7 @@ trainer.set_place_data(data = f'municipalities/{municipality}_h3_10/spatial_unit
 # Define the model
 trainer.set_model_for_application(name = None,
                                     base_model = base_model,
+                                    base_pretrained = base_pretrained,
                                     img2vec_encoder_layers = img2vec_encoder_layers,
                                     pooling = pooling,
                                     encoder_layers = encoder_layers,
