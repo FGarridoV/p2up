@@ -159,8 +159,8 @@ class PlaceEmbeddingTrainer(object):
                                     L2_norm = L2_norm, 
                                     use_dropout = use_dropout,
                                     dropout_rate = dropout_rate,
-                                    act_f_encoder = act_f_encoder,
-                                    act_f_projection = act_f_projection)
+                                    act_f_last_encoder = act_f_encoder,
+                                    act_f_last_projection = act_f_projection)
         
         self.model = self.model.to(self.device)
 
