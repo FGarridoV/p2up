@@ -39,7 +39,7 @@ trainer.set_model_for_application(name = None,
                                     act_f_projection = act_f_projection, L2_norm= L2_norm)
 
 # eval on the city
-modelpth = f'results/{trainer_name}_e{epoch_model}.pth'
+modelpth = f'results/{trainer_name}/{trainer_name}_e{epoch_model}.pth'
 responses = trainer.apply_model(modelpth)
 
 # Create application folder if it does not exist
