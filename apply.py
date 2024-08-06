@@ -21,6 +21,7 @@ projection_layers = ast.literal_eval(model_hparams['projection_layers']) if mode
 act_f_encoder = model_hparams['act_f_encoder']
 act_f_projection = model_hparams['act_f_projection']
 L2_norm = model_hparams['L2_norm']
+dropout = model_hparams['use_dropout']
 
 trainer = PlaceEmbeddingTrainer(name = None,
                                 use_gpu = True,
@@ -37,6 +38,7 @@ trainer.set_model_for_application(name = None,
                                     pooling = pooling,
                                     encoder_layers = encoder_layers,
                                     projection_layers = projection_layers,
+                                    use_dropout = dropout,
                                     act_f_encoder = act_f_encoder,
                                     act_f_projection = act_f_projection, 
                                     L2_norm= L2_norm)

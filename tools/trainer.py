@@ -141,14 +141,13 @@ class PlaceEmbeddingTrainer(object):
                               pth_state, self.model.num_params)
         
     def set_model_for_application(self, name, base_model, base_pretrained, img2vec_encoder_layers, pooling, 
-                                  encoder_layers, projection_layers, act_f_encoder, act_f_projection, L2_norm):
+                                  encoder_layers, projection_layers, use_dropout, act_f_encoder, act_f_projection, L2_norm):
         
         n_images = 5
-        use_dropout = False
         dropout_rate = 0
         pth_state = None
 
-        self.model = PlaceEmbedding(name = name, 
+        self.model = TripletPlaceEmbedding(name = name, 
                                     n_images=n_images,
                                     base_model = base_model,
                                     base_pretrained = base_pretrained,
@@ -164,11 +163,22 @@ class PlaceEmbeddingTrainer(object):
         
         self.model = self.model.to(self.device)
 
-        self.logger.log_model(self.model.name, base_model, self.model.imgemb_size,
-                              base_pretrained, img2vec_encoder_layers, 
-                              pooling, encoder_layers, projection_layers, act_f_encoder, act_f_projection,
-                              L2_norm, use_dropout, dropout_rate, pth_state,
-                              self.model.num_params)
+
+        self.logger.log_model(name = self.model.name, 
+                              base_model = base_model,
+                              emb_size = self.model.imgemb_size,
+                              pretrained = base_pretrained, 
+                              img2vec_encoder_layers = img2vec_encoder_layers,
+                              pooling = pooling,
+                              encoder_layers = encoder_layers,
+                              projection_layers = projection_layers,
+                              L2_norm = L2_norm,
+                              use_dropout = use_dropout,
+                              dropout_rate = dropout_rate,
+                              act_f_encoder = act_f_encoder, 
+                              act_f_projection = act_f_projection,
+                              pth_state = pth_state,
+                              n_params = self.model.num_params)
     
     def set_loss(self, loss_kind, loss_dist, loss_margin, loss_swap, loss_reduction, count_corrects):
 
