@@ -7,7 +7,7 @@ import os
 municipality = 'Rotterdam'
 trainer_name = '20240803_161225'
 epoch_model = 6
-batch_size = 32
+batch_size = 128
 
 df = pd.read_csv(f'results/models.csv')
 model_hparams = df[df['trainer_name'] == trainer_name].iloc[0]

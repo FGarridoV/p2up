@@ -444,9 +444,9 @@ class PlaceEmbeddingTrainer(object):
         responses = []
         with torch.no_grad():
             b = 0
-            print(f'Applying model to {len(self.eval_dataloader.dataset)} places')
+            self.logger.log(f'Applying model to {len(self.eval_dataloader.dataset)} places')
             for _, data in enumerate(self.eval_dataloader):
-                print(f"Processing batch {b}")
+                self.logger.log("Processing batch {b}")
                 h3_code, place = data[0], data[1].to(self.device)
                 e, pe = self.model(place)
                 responses.append((h3_code, e.to('cpu').numpy(), pe.to('cpu').numpy()))
