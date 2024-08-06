@@ -10,7 +10,7 @@ epoch_model = 6
 batch_size = 128
 
 df = pd.read_csv(f'results/models.csv')
-model_hparams = df[df['trainer_name'] == trainer].iloc[0]
+model_hparams = df[df['trainer_name'] == trainer_name].iloc[0]
 
 base_model = model_hparams['base_model']
 pooling = model_hparams['pooling']
