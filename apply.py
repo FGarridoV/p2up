@@ -51,5 +51,5 @@ responses = trainer.apply_model(modelpth)
 if not os.path.exists('applications'):
     os.makedirs('applications')
 
-with open(f'applications/{modelpth}_{municipality}.pkl', 'wb') as f:
+with open(f'applications/{trainer_name}_e{epoch_model}_{municipality}.pkl', 'wb') as f:
     pickle.dump(responses, f)
