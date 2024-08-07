@@ -5,7 +5,7 @@ import pickle
 import os
 
 municipality = 'Rotterdam'
-trainer_name = '20240806_003814'
+trainer_name = '20240806_002214'
 epoch_model = 7
 batch_size = 128
 
