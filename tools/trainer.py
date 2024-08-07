@@ -216,6 +216,11 @@ class PlaceEmbeddingTrainer(object):
                 if 'img2vec' in n:
                     p.requires_grad = False
         
+        if lr_embedder == 'now_train':
+            for n, p in self.model.named_parameters():
+                if 'img2vec' in n:
+                    p.requires_grad = True
+        
         else:
             img2vec_params = [p for n, p in self.model.named_parameters() if 'img2vec' in n]
             other_params = [p for n, p in self.model.named_parameters() if 'img2vec' not in n]
