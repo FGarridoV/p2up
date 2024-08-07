@@ -5,8 +5,8 @@ import pickle
 import os
 
 municipality = 'Rotterdam'
-trainer_name = '20240803_161225'
-epoch_model = 6
+trainer_name = '20240806_003814'
+epoch_model = 7
 batch_size = 128
 
 df = pd.read_csv(f'results/models.csv')
