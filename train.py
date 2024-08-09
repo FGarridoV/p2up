@@ -42,7 +42,7 @@ if __name__ == '__main__':
             loss_margin = float(row['loss_margin'])
             loss_swap = row['loss_swap']
             lr = float(row['lr'])
-            lr_embedder = float(row['lr_embedder']) if (row['lr_embedder'] != 'no_train') and (row['lr_embedder'] != 'now_train') else 'no_train'
+            lr_embedder = row['lr_embedder'] if type(row['lr_embedder'] == str) else float(row['lr_embedder'])
             lr_scheduler_step = int(row['lr_scheduler_step']) if row['lr_scheduler_step'] != 'None' else None
             lr_scheduler_gamma = float(row['lr_scheduler_gamma']) if row['lr_scheduler_gamma'] != 'None' else None
             weight_decay = float(row['weight_decay'])
