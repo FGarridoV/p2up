@@ -220,6 +220,7 @@ class PlaceEmbeddingTrainer(object):
             for n, p in self.model.named_parameters():
                 if 'img2vec' in n:
                     p.requires_grad = True
+                lr_embedder = learning_rate
         
         else:
             img2vec_params = [p for n, p in self.model.named_parameters() if 'img2vec' in n]
