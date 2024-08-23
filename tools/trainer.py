@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader, random_split
 from models.dataset import TripletDataset
-from models.dataset import PlaceDataset
+from models.dataset import PlaceDataset, AMSDataset
 from models.dataset import TripletMinerSampler
 from models.models import PlaceEmbedding, TripletPlaceEmbedding 
 from tools.transforms import get_transform
@@ -440,6 +440,12 @@ class PlaceEmbeddingTrainer(object):
         
         evalset = PlaceDataset(data = data, root = '../', transform = eval_transform)
         self.eval_dataloader = DataLoader(evalset, batch_size = batch_size, shuffle=False, num_workers=num_workers) 
+
+    def set_ams_data(self, data, batch_size, num_workers = 0):
+        eval_transform = get_transform('default')
+        
+        evalset = AMSDataset(data = data, transform = eval_transform)
+        self.eval_dataloader = DataLoader(evalset, batch_size = batch_size, shuffle=False, num_workers=num_workers)
 
     
     def apply_model(self, modelpth):

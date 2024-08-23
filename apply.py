@@ -4,10 +4,10 @@ import ast
 import pickle
 import os
 
-municipality = 'Rotterdam'
-trainer_name = '20240806_002214'
-epoch_model = 7
-batch_size = 128
+municipality = 'AMS'
+trainer_name = '20240807_092737'
+epoch_model = 2
+batch_size = 32
 
 df = pd.read_csv(f'results/models.csv')
 model_hparams = df[df['trainer_name'] == trainer_name].iloc[0]
@@ -28,7 +28,7 @@ trainer = PlaceEmbeddingTrainer(name = None,
                                 use_tensorboard = False, 
                                 verbose = True)
 
-trainer.set_place_data(data = f'municipalities/{municipality}_h3_10/spatial_units.pkl', batch_size = batch_size)
+trainer.set_ams_data(data = f'collector/img_index/panos_ams_dl_collection.geojson', batch_size = batch_size)
 
 # Define the model
 trainer.set_model_for_application(name = None,

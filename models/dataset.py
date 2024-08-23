@@ -115,5 +115,29 @@ class PlaceDataset(Dataset):
             images_place = torch.stack(images_place)
 
         return row['h3'], images_place
+    
+
+class AMSDataset(Dataset):
+    def __init__(self, data = 'collector/img_index/panos_ams_dl_collection.geojson', root = '/tudelft.net/staff-umbrella/phdfrancisco/', transform=None):
+        """
+        PlaceDataset class to load the places dataset
+        """
+        self.data = Utils.generate_places_AMS(data)
+        self.root = root
+        self.transform = transform
+    
+
+    def __len__(self):
+        return len(self.data)
+    
+
+    def __getitem__(self, idx):
+        row = self.data.iloc[idx]
+        images_place = [Image.open(f"{self.root}/{row[f'img_{img}']}") for img in range(1, 6)]
+        if self.transform:
+            images_place = [self.transform(image) for image in images_place]
+            images_place = torch.stack(images_place)
+
+        return row['h3'], images_place
 
 

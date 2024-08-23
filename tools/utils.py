@@ -116,3 +116,27 @@ class Utils:
         df_places = df.pivot_table(index='h3', columns='img_num', values='image_path', aggfunc='first').reset_index()
         df_places.columns = ['h3'] + [f'img_{i}' for i in range(1, len(df_places.columns))]
         return df_places
+    
+    @staticmethod
+    def generate_places_AMS(pkl_file):
+        df = pd.read_pickle(pkl_file)
+        # create a column h3 from 1 to N
+        df1 = df.copy()
+        df1['img_1'] = df1.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_left.jpg", axis=1)
+        df1['img_2'] = df1.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_left.jpg", axis=1)
+        df1['img_3'] = df1.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_left.jpg", axis=1)
+        df1['img_4'] = df1.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_left.jpg", axis=1)
+        df1['img_5'] = df1.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_left.jpg", axis=1)
+
+        df2 = df.copy()
+        df2['img_1'] = df2.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_right.jpg", axis=1)
+        df2['img_2'] = df2.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_right.jpg", axis=1)
+        df2['img_3'] = df2.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_right.jpg", axis=1)
+        df2['img_4'] = df2.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_right.jpg", axis=1)
+        df2['img_5'] = df2.apply(lambda x: f"panos_ams_dl_medium/{x['folder']}/{x['pano_id']}_right.jpg", axis=1)
+        
+        df_places = pd.concat([df1, df2])
+        df_places = df_places.reset_index(drop=True)
+        df_places['h3'] = df_places.index
+        df_places.to_csv('data/places_ams_ref.csv', index=False)
+        return df_places
